@@ -25,7 +25,13 @@
 
     <main>
 
-        
+        <section class="sec-1">
+
+        </section>
+
+        <section class="sec-2">
+            
+        </section>
 
     </main>
 
