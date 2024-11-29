@@ -1,0 +1,101 @@
+* {
+    padding: 0;
+    margin: 0;
+    
+}
+
+.error {
+    color: red;
+}
+
+.container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    background-color: transparent;
+    padding: 2rem;
+    height: auto;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.5);
+}
+
+.sign-form {
+    margin: 1rem;
+}
+
+.sign-form h2 {
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+/* Form labels */
+.sign-form label {
+    font-size: 14px;
+    color: #555;
+    text-align: left;
+    display: block;
+    margin-bottom: 2px;
+    font-weight: 700;
+}
+
+/* Form input fields */
+.sign-form input[type="text"],
+.sign-form input[type="password"] {
+    width: 100%; /* Full width for alignment */
+    padding: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box; /* Ensure consistent box model */
+}
+
+/* Submit button */
+.sign-form input[type="submit"] {
+    width: 100%; /* Same width as input fields */
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sign-form input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Error message styling */
+.sign-form .error {
+    color: red;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+/* Signup link styling */
+.sign-form p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.sign-form p a {
+    color: #4caf50;
+    text-decoration: none;
+}
+
+.sign-form p a:hover {
+    text-decoration: underline;
+}
+
+h2, h1 {
+    text-align: center;
+}
