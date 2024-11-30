@@ -10,5 +10,5 @@
 </body>
 </html>
 
-
+<a href="add.php">add</a>
 <a href="logout.php">logout</a>
