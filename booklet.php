@@ -1,8 +1,22 @@
+<?php
+    session_start();
+
+    // Check if the user is logged in
+    if(!isset($_SESSION['account'])) {
+        // If not logged in, redirect to the login page
+        header('location: signin.php');
+        exit(); // Prevent further code execution
+    }
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle" />
     <link rel = "stylesheet" href = "styles/landing.css">
     <title>Booklet</title>
     <style>
@@ -54,7 +68,7 @@
             <nav class="menu">
                 <a href="user-landing.php">Home</a>
                 <a href="booklet.php">Booklet</a>
-                <a href="profile.php">Profile</a>
+                <a href="profile.php"><span class="material-symbols-outlined" style = "color: black;">account_circle</span></a>
             </nav>
             
         </nav>

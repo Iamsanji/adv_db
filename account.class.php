@@ -6,6 +6,11 @@ class Account {
     public $id = '';
     public $first_name = '';
     public $last_name = '';
+    public $sex = '';
+    public $age = '';
+    public $contact_number = '';
+    public $pwd_id = '';
+    public $address = '';
     public $username = '';
     public $password = '';
     public $role = '';
@@ -19,11 +24,16 @@ class Account {
     }
 
     function add(){
-        $sql = "INSERT INTO account (first_name, last_name, username, password, role, is_staff, is_admin) VALUES (:first_name, :last_name, :username, :password, :role, :is_staff, :is_admin);";
+        $sql = "INSERT INTO account (first_name, last_name, sex, age, contact_number, pwd_id, address, username, password, role, is_staff, is_admin) VALUES (:first_name, :last_name, :sex, :age, :contact_number, :pwd_id, :address, :username, :password, :role, :is_staff, :is_admin);";
         $query = $this->db->connect()->prepare($sql);
 
         $query->bindParam(':first_name', $this->first_name);
         $query->bindParam(':last_name', $this->last_name);
+        $query->bindParam(':sex', $this->sex);
+        $query->bindParam(':age', $this->age);
+        $query->bindParam(':contact_number', $this->contact_number);
+        $query->bindParam(':pwd_id', $this->pwd_id);
+        $query->bindParam(':address', $this->address);
         $query->bindParam(':username', $this->username);
         $hashpassword = password_hash($this->password, PASSWORD_DEFAULT);
         $query->bindParam(':password', $hashpassword);
@@ -80,6 +90,40 @@ class Account {
 
         return $data;
     }
+
+    //fetchandupdate--recently add today
+
+    function fetchById($user_id){
+        $sql = "SELECT * FROM account WHERE id = :user_id LIMIT 1;";
+        $query = $this->db->connect()->prepare($sql);
+    
+        $query->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $query->execute();
+    
+        $data = $query->fetch();
+        return $data;
+    }
+    
+
+    public function update($user_id) {
+        $sql = "UPDATE account SET first_name = :first_name, last_name = :last_name, sex = :sex, age = :age, contact_number = :contact_number, pwd_id = :pwd_id, address = :address, username = :username, password = :password WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+    
+        $query->bindParam(':first_name', $this->first_name);
+        $query->bindParam(':last_name', $this->last_name);
+        $query->bindParam(':sex', $this->sex);
+        $query->bindParam(':age', $this->age);
+        $query->bindParam(':contact_number', $this->contact_number);
+        $query->bindParam(':pwd_id', $this->pwd_id);
+        $query->bindParam(':address', $this->address);
+        $query->bindParam(':username', $this->username);
+        $query->bindParam(':password', $this->password);
+        $query->bindParam(':id', $user_id);
+    
+        return $query->execute();
+    }
+    
+    
     
 }
 

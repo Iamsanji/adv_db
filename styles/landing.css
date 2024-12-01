@@ -7,20 +7,38 @@ span {
     color: red;
 }
 
+/* Style for the outer header */
 .header {
+    display: flex; /* Enable Flexbox */
+    justify-content: space-between; /* Space out items (title and menu) */
+    align-items: center; /* Vertically center the content */
+    padding: 1rem; /* Add some spacing around the header */
+    background-color: #f8f9fa; /* Optional: background color */
+}
+
+/* Style for the title section */
+.title {
+    flex: 1; /* Allows it to take up space */
+    text-align: center; /* Center text within this section */
     display: flex;
-    text-align: center;
-    padding: 1rem;
-    justify-content: space-between;
-    color: black;
-    background-color: skyblue;
-    top: 0;
-    position: sticky;
+    justify-content: flex-start;
+    font-size: 30px;
+}
+
+/* Style for the menu section */
+.menu {
+    display: flex; /* Use flex for the menu items */
+    gap: 20px; /* Space between menu items */
+    align-items: center; /* Vertically center icons and links */
 }
 
 .menu a {
-    text-decoration: none;
-    margin-left: 2rem;
-    color: black;
-    font-weight: 700;
+    text-decoration: none; /* Remove underline */
+    color: #333; /* Set link color */
+    font-weight: bold;
 }
+
+.menu a:hover {
+    color: #4CAF50; /* Optional hover effect */
+}
+

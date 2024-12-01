@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Redirect based on role
         if ($data['role'] === 'customer') {
-            header('location: customer.php'); // Redirect to customer page
+            header('location: user-landing.php'); // Redirect to customer page
         } else {
             header('location: admin.php'); // Redirect to staff dashboard
         }
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($_SESSION['account']['is_staff']) {
             header('location: admin.php'); // Redirect to staff dashboard
         } else {
-            header('location: customer.php'); // Redirect to customer page
+            header('location: user-landing.php'); // Redirect to customer page
         }
     }
 }
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Sign in</title>
     <link rel = "stylesheet" href = "styles/sign.css">
     
 </head>
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <div class="sign-form">
                     <form action="signin.php" method="post">
-                        <h1>Welcome to OB</h1>
+                        <a href="landing.php" style = "text-decoration: none; color: black; font-size: 30px;"><h1>O<span>B</span></h1></a>
                         <h2>Sign in</h2>
                         <label for="username">Username/Email</label>
                         
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         
                         <input type="password" name="password" id="password">
                         
-                        <input type="submit" value="Login" name="login">
+                        <input type="submit" value="Sign in" name="login">
                         <?php
                         if (!empty($loginErr)) {
                         ?>
