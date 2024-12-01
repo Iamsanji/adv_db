@@ -18,9 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Redirect based on role
         if ($data['role'] === 'customer') {
-            header('location: user-landing.php'); // Redirect to customer page
+            header('location: user-landing.php'); 
         } else {
-            header('location: admin.php'); // Redirect to staff dashboard
+            header('location: admin.php'); 
         }
     } else {
         $loginErr = 'Invalid username/password';
@@ -28,9 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     if (isset($_SESSION['account'])) {
         if ($_SESSION['account']['is_staff']) {
-            header('location: admin.php'); // Redirect to staff dashboard
+            header('location: admin.php'); // 
         } else {
-            header('location: user-landing.php'); // Redirect to customer page
+            header('location: user-landing.php'); 
         }
     }
 }

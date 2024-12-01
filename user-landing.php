@@ -7,7 +7,7 @@
     // echo "<script type='text/javascript'>alert(' User is not logged in.');</script>";
         exit(); // Exit if the user is not logged in
     }
-    $user_id = $_SESSION['account']['id']; // Retrieve user ID from session
+    $user_id = $_SESSION['account']['id'];
 
 ?>
 

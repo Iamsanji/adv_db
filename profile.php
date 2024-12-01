@@ -4,19 +4,19 @@ require_once 'account.class.php';
 
 session_start();
 
-// Check if the user is logged in
+
 if (!isset($_SESSION['account']) || !isset($_SESSION['account']['id'])) {
     echo "User not found or invalid data.";
     header('Location: signin.php');
-    exit(); // Exit if the user is not logged in
+    exit();
 }
 
-$user_id = $_SESSION['account']['id']; // Get logged-in user's ID
+$user_id = $_SESSION['account']['id']; 
 $accountObj = new Account();
-$user_data = $accountObj->fetchById($user_id); // Fetch user data based on ID
+$user_data = $accountObj->fetchById($user_id); 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get updated data from form
+
     $first_name = clean_input($_POST['first_name']);
     $last_name = clean_input($_POST['last_name']);
     $sex = clean_input($_POST['sex']);
@@ -24,19 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $contact_number = clean_input($_POST['contact_number']);
     $pwd_id = clean_input($_POST['pwd_id']);
     $address = clean_input($_POST['address']);
-    $username = $user_data['username']; // Keep the existing username (do not allow updating)
+    $username = $user_data['username']; 
 
-    // Check if password is provided, if yes, hash it; otherwise, keep the existing password
     $password = clean_input($_POST['password']);
     if (!empty($password)) {
-        // Only update password if a new one is provided
-        $password = password_hash($password, PASSWORD_DEFAULT); // Hash the new password
+        
+        $password = password_hash($password, PASSWORD_DEFAULT);
     } else {
-        // If no new password, keep the existing password
+        
         $password = $user_data['password'];
     }
 
-    // Set the object properties
+    
     $accountObj->first_name = $first_name;
     $accountObj->last_name = $last_name;
     $accountObj->sex = $sex;
@@ -44,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $accountObj->contact_number = $contact_number;
     $accountObj->pwd_id = $pwd_id;
     $accountObj->address = $address;
-    $accountObj->username = $username; // Username stays the same
-    $accountObj->password = $password; // Updated password or existing one
+    $accountObj->username = $username; 
+    $accountObj->password = $password;
 
-    // Perform the update in the database
+    
     if ($accountObj->update($user_id)) {
         echo "Profile updated successfully.";
         // Optionally redirect after update
@@ -114,10 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input type="text" name="address" id="address" value="<?= htmlspecialchars($user_data['address']) ?>">
 
                     <label for="username">Username:</label>
-                    <input type="text" name="username" id="username" value="<?= htmlspecialchars($user_data['username']) ?>" disabled> <!-- Username is displayed but not editable -->
+                    <input type="text" name="username" id="username" value="<?= htmlspecialchars($user_data['username']) ?>" disabled>
 
                     <label for="password">New Password (leave blank to keep current):</label>
-                    <input type="password" name="password" id="password" value=""> <!-- Password is optional -->
+                    <input type="password" name="password" id="password" value=""> 
 
                     <input type="submit" value="Update Profile">
 

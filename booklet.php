@@ -1,11 +1,11 @@
 <?php
     session_start();
 
-    // Check if the user is logged in
+    
     if(!isset($_SESSION['account'])) {
-        // If not logged in, redirect to the login page
+        
         header('location: signin.php');
-        exit(); // Prevent further code execution
+        exit(); 
     }
 
 ?>

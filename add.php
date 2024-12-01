@@ -1,41 +1,15 @@
 <?php
 
     
-    session_start(); // Ensure the session is started before accessing session variables
+    session_start();
 
     if (!isset($_SESSION['account']) || !isset($_SESSION['account']['id'])) {
         header('Location: signin.php');
-       // echo "<script type='text/javascript'>alert(' User is not logged in.');</script>";
-        exit(); // Exit if the user is not logged in
+
+        exit();
     }
-    $user_id = $_SESSION['account']['id']; // Retrieve user ID from session
+    $user_id = $_SESSION['account']['id']; 
 
-    /*// Check if the user is logged in
-    if(!isset($_SESSION['account'])) {
-        // If not logged in, redirect to the login page
-        header('location: signin.php');
-        exit(); // Prevent further code execution
-    }*/
-
-    /*session_start();  // Ensure session is started
-
-    // Debug: Display user session details
-    if (isset($_SESSION['account']['id'])) {
-        echo "User ID from session: " . $_SESSION['account']['id']; 
-    } else {
-        echo "User is not logged in.";
-    }
-
-    require_once('header.php');  // This already starts the session
-
-    // Check if the user is logged in
-    if (!isset($_SESSION['account']['id'])) {
-        echo "User is not logged in.";
-        exit();  // Exit the script if the user is not logged in
-    } else {
-        $user_id = $_SESSION['account']['id'];  // Get the user ID from session
-        echo "User ID from session: " . $user_id;
-    }*/
     require_once('header.php');
     require_once('functions.php');
     require_once('prescribe.class.php');
@@ -46,14 +20,6 @@
     $prescribeObj = new Prescribe ();
 
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-        /*if (isset($_SESSION['account']['id'])) {
-            $user_id = $_SESSION['account']['id'];  // Get user ID from session
-            $prescribeObj->user_id = $user_id;  // Assign user_id to the object
-        } else {
-            echo "User is not logged in.";
-            exit();
-        }*/
 
         $product_code = clean_input($_POST['product_code']);
         $name = clean_input($_POST['name']);

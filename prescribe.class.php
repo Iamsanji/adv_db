@@ -21,7 +21,7 @@ class Prescribe {
     }
 
     function add() {
-        // Debugging: Check if user_id is available in the class object
+        
         if (empty($this->user_id)) {
             echo "User ID is not set in the class.";
             return false;
@@ -33,7 +33,7 @@ class Prescribe {
         try {
             $query = $this->db->connect()->prepare($sql);
             
-            // Bind the parameters
+    
             $query->bindParam(':product_code', $this->product_code);
             $query->bindParam(':name', $this->name);
             $query->bindParam(':product_name', $this->product_name);
@@ -41,9 +41,9 @@ class Prescribe {
             $query->bindParam(':quantity', $this->quantity);
             $query->bindParam(':price', $this->price);
             $query->bindParam(':date', $this->date);
-            $query->bindParam(':user_id', $this->user_id); // Bind the user_id
+            $query->bindParam(':user_id', $this->user_id); 
             
-            // Execute the query
+            
             $query->execute();
 
             return true;
