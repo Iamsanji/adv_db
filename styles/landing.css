@@ -13,7 +13,7 @@ span {
     justify-content: space-between; /* Space out items (title and menu) */
     align-items: center; /* Vertically center the content */
     padding: 1rem; /* Add some spacing around the header */
-    background-color: #f8f9fa; /* Optional: background color */
+    background-color: white; /* Optional: background color */
 }
 
 /* Style for the title section */
@@ -40,5 +40,23 @@ span {
 
 .menu a:hover {
     color: #4CAF50; /* Optional hover effect */
+}
+
+.container {
+    background-color: wheat;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+}
+
+h3 {
+    font-weight: 700;
+    font-size: 150px;
 }
 

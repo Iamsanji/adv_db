@@ -122,6 +122,30 @@ class Account {
     
         return $query->execute();
     }
+
+    // 7pm
+
+    public function updateProfilePicture($user_id, $filePath) {
+        $sql = "UPDATE account SET profile_picture = :profile_picture WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+    
+        $query->bindParam(':profile_picture', $filePath);
+        $query->bindParam(':id', $user_id);
+    
+        return $query->execute();
+    }
+    
+    public function getProfilePicture($user_id) {
+        $sql = "SELECT profile_picture FROM account WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+    
+        $query->bindParam(':id', $user_id);
+        $query->execute();
+    
+        $data = $query->fetch();
+        return $data['profile_picture'] ?? 'uploads/default.jpg';
+    }
+    
     
     
     

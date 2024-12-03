@@ -26,6 +26,7 @@
         <nav class="header">
             <nav class="title">
                 <h1>O<span>B</span></h1>
+                
             </nav>
             
             <nav class="menu">
@@ -38,13 +39,25 @@
     </header>
 
     <main>
-        <div class="main-title">
+        <div class="container">
            
-            <p>Landing Page</p>
+            <div class="card">
+                <h1 class="main-title">O<span>B</span>:</h1>
+                <h2>Senior & PWD Monitoring and Management System.</h2>
+                <p>treamlining discounts and monitoring for Seniors and PWDs with efficiency and care.</p>
+                <div class="booklet">
+                    <a href="booklet.php"> BOOKLET </a>
+                </div>
+            </div>
+
+            <div class="logo">
+                <h3>O<span>B</span></h3>
+            </div>
+
         </div>
 
-        <a href="add.php">add</a>
-        <a href="logout.php">logout</a>
+        
+        
     </main>
 
     <footer>
