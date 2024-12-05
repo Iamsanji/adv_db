@@ -40,9 +40,8 @@
         <table border = 1>
 
             <tr>
-
+                <th>ID</th>
                 <th>User ID</th>
-
                 <th>Product Code</th>
                 <th>Name</th>
                 <th>Product Name</th>
@@ -62,6 +61,7 @@
 
             <tr>
 
+                <td><?= $i ?></td>
                 <td><?= $arr['user_id'] ?></td>
                 <td><?= $arr['product_code'] ?></td>
                 <td><?= $arr['name'] ?></td>
@@ -70,6 +70,19 @@
                 <td><?= $arr['dosage'] ?></td>
                 <td><?= $arr['quantity'] ?></td>
                 <td><?= $arr['date'] ?></td>
+                <td>
+                <a href="edit.php?id=<?= $arr['id'] ?>">Edit</a>
+                <!-- Delete button with product name and ID as data attributes -->
+                <?php
+                    if ($_SESSION['account']['is_admin']){
+                ?>
+
+
+
+                <?php
+                    }
+                ?>
+                </td>
 
             </tr>
 
@@ -84,6 +97,8 @@
     <a href="add.php">add</a>
     <a href="admin-view.php">view</a>
     <a href="logout.php">logout</a>
+
+    
 </body>
 </html>
 
