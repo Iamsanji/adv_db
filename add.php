@@ -14,8 +14,8 @@
     require_once('functions.php');
     require_once('prescribe.class.php');
 
-    $product_code = $name = $product_name = $dosage = $quantity = $price = $date = '';
-    $product_codeErr = $nameErr = $product_nameErr = $dosageErr = $quantityErr = $priceErr = $dateErr = '';
+    $product_code = $name = $product_name = $description = $dosage = $quantity = $price = $date = '';
+    $product_codeErr = $nameErr = $product_nameErr = $descriptionErr = $dosageErr = $quantityErr = $priceErr = $dateErr = '';
 
     $prescribeObj = new Prescribe ();
 
@@ -24,10 +24,13 @@
         $product_code = clean_input($_POST['product_code']);
         $name = clean_input($_POST['name']);
         $product_name = clean_input($_POST['product_name']);
+        $description = clean_input($_POST['description']);
         $dosage = clean_input($_POST['dosage']);
         $quantity = clean_input($_POST['quantity']);
         $price = clean_input($_POST['price']);
         $date = clean_input($_POST['date']);
+        //new
+        $patient_id = clean_input($_POST['patient_id']);
 
         if(empty($product_code)){
             $product_codeErr = 'Product Code is required';
@@ -39,6 +42,10 @@
         
         if(empty($product_name)){
             $product_nameErr = 'Product Name is required';
+        }
+
+        if(empty($description)){
+            $descriptionErr = 'Description is required';
         }
 
         if(empty($dosage)){
@@ -57,21 +64,28 @@
             $dateErr = 'Date is required';
         }
 
-        if(empty($product_codeErr) && empty($nameErr) && empty($product_nameErr) && empty($dosageErr) && empty($quantityErr) && empty($priceErr) && empty($dateErr)) {
+        if(empty($product_codeErr) && empty($nameErr) && empty($product_nameErr) && empty($descriptionErr) && empty($dosageErr) && empty($quantityErr) && empty($priceErr) && empty($dateErr)) {
 
             $prescribeObj->product_code = $product_code;
             $prescribeObj->name = $name;
             $prescribeObj->product_name = $product_name;
+            $prescribeObj->description = $description;
             $prescribeObj->dosage = $dosage;
             $prescribeObj->quantity = $quantity;
             $prescribeObj->price = $price;
             $prescribeObj->date = $date;
 
-            $prescribeObj->user_id = $user_id;
+           // $prescribeObj->user_id = $user_id;
+
+           //new
+           $prescribeObj->user_id = $patient_id; // Set patient ID here, not the admin's
+
+            // Assign admin ID (who is adding the prescription)
+            $prescribeObj->admin_id = $user_id;
 
             if($prescribeObj->add()) {
                 //user-view
-                header('Location: booklet.php');
+                header('Location: admin.php');
             } else {
                 echo 'Something went wrong when adding new prescription.';
             }
@@ -94,127 +108,51 @@
         .error {
             color: red;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-                /* Style for the entire form */
-        form {
-            max-width: 500px;
-            margin: 1rem auto;
-            padding: 1rem;
-            background-color: transparent;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            
-        }
-
-        /* Style for labels */
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        /* Style for input fields */
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        /* Style for the error messages */
-        .error {
-            color: red;
-            font-size: 0.9em;
-        }
-
-        /* Style for the submit button */
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        /* Responsive design */
-        @media (max-width: 600px) {
-            form {
-                padding: 15px;
-            }
-
-            input[type="submit"] {
-                font-size: 0.9em;
-            }
-        }
-
+        
     </style>
 </head>
 <body>
 
-    <header>
-        <nav class="header">
-            <nav class="title">
-                <h1>O<span>B</span></h1>
-                
-            </nav>
-            
-            <nav class="menu">
-                <a href="user-landing.php">Home</a>
-                <a href="booklet.php">Booklet</a>
-                <a href="profile.php"><span class="material-symbols-outlined" style = "color: black;">account_circle</span></a>
-            </nav>
-            
-        </nav>
-    </header>
 
-    <div class="container">
         <form action="" method = "post">
 
             <label for="product_code">Product Code</label>
-            
+            <br>
             <input type="text" name = "product_code" value ="<?= $product_code ?>">
             
             <?php if(!empty($product_codeErr)): ?>
                 <span class="error"><?= $product_codeErr ?></span><br>
             <?php endif; ?>
-
+            <br>
             <label for="name">Name</label>
-            
+            <br>
             <input type="text" name = "name" value ="<?= $name ?>">
             
             <?php if(!empty($nameErr)): ?>
                 <span class="error"><?= $nameErr ?></span><br>
             <?php endif; ?>
-
+            <br>
             <label for="product_name">Product Name</label>
+            <br>
+
             <input type="text" name = "product_name" value ="<?= $product_name ?>">
             
             <?php if(!empty($product_nameErr)): ?>
                 <span class="error"><?= $product_nameErr ?></span><br>
             <?php endif; ?>
+            <br>
+
+            <label for="description">Description</label>
+            <br>
+            <input type="text" name = "description" value ="<?= $description ?>">
+            
+            <?php if(!empty($descriptionErr)): ?>
+                <span class="error"><?= $descriptionErr ?></span><br>
+            <?php endif; ?>
+            <br>
 
             <label for="dosage">Dosage</label>
-
+            <br>
             <select name="dosage" id="dosage">
                 <option value="">--Select--</option>
                 <option value="Grams(g)" <?= (isset($dosage) && $dosage == 'Grams(g)')? 'selected=true' : ''?>>Grams(g)</option>
@@ -224,34 +162,52 @@
             <?php if(!empty($dosageErr)): ?>
                 <span class="error"><?= $dosageErr ?></span><br>
             <?php endif; ?>
-
+            <br>
             <label for="quantity">Quantity</label>
-            
+            <br>
             <input type="number" name="quantity" value ="<?= $quantity ?>">
             
             <?php if(!empty($quantityErr)): ?>
                 <span class="error"><?= $quantityErr ?></span><br>
             <?php endif; ?>
-
+            <br>
             <label for="price">Price</label>
-            
+            <br>
             <input type="number" name ="price" value ="<?= $price ?>">
             
             <?php if(!empty($priceErr)): ?>
                 <span class="error"><?= $priceErr ?></span><br>
             <?php endif; ?>
-
+            <br>
             <label for="date">Date</label>
-            
+            <br>
             <input type="date" name="date" value ="<?= $date ?>">
             
             <?php if(!empty($dateErr)): ?>
                 <span class="error"><?= $dateErr ?></span><br>
             <?php endif; ?>
+            <br>
+
+
+                <!-- Add a dropdown to select a user (patient) -->
+        <label for="patient_id">Select Patient</label>
+        <br>
+        <select name="patient_id" id="patient_id">
+            <option value="">--Select Patient--</option>
+            <?php
+            // Fetch all patients (users) from the database
+            require_once('database.php');
+            $db = new Database();
+            $query = $db->connect()->query("SELECT id, first_name, last_name FROM account WHERE role = 'customer'");
             
+            while ($row = $query->fetch()) {
+                echo "<option value='{$row['id']}'>{$row['first_name']} {$row['last_name']}</option>";
+            }
+            ?>
+        </select>
 
             <input type="submit" value="Add">
         </form>
-    </div>
+    
 </body>
 </html>

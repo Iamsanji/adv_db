@@ -21,40 +21,6 @@
     <title>Booklet</title>
     <style>
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 16px;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f4f4f4;
-            color: #333;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-            cursor: pointer;
-        }
-
-        .container {
-            padding: 1rem;
-        }
-
-
     </style>    
 </head>
 <body>
@@ -83,7 +49,6 @@
 
     ?>
 
-    <main class="container"> 
         <table border = 1>
 
             <tr>
@@ -92,6 +57,7 @@
                 <th>Product Code</th>
                 <th>Name</th>
                 <th>Product Name</th>
+                <th>Description</th>
                 <th>Dosage</th>
                 <th>Quantity</th>
                 <th>Price</th>
@@ -113,6 +79,7 @@
                 <td><?= $arr['product_code'] ?></td>
                 <td><?= $arr['name'] ?></td>
                 <td><?= $arr['product_name'] ?></td>
+                <td><?= $arr['description'] ?></td>
                 <td><?= $arr['dosage'] ?></td>
                 <td><?= $arr['quantity'] ?></td>
                 <td><?= $arr['price'] ?></td>
@@ -127,6 +94,5 @@
             ?>
 
         </table>
-    </main>   
 </body>
 </html>

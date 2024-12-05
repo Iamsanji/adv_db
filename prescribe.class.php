@@ -6,9 +6,12 @@ require_once('header.php');
 class Prescribe {
     public $id = '';
     public $user_id = '';
+    //new
+    public $admin_id = '';
     public $product_code = '';
     public $name = '';
     public $product_name = '';
+    public $description = '';
     public $dosage = '';
     public $quantity = '';
     public $price = '';
@@ -27,8 +30,8 @@ class Prescribe {
             return false;
         }
 
-        $sql = "INSERT INTO prescribe (product_code, name, product_name, dosage, quantity, price, date, user_id)
-                VALUES (:product_code, :name, :product_name, :dosage, :quantity, :price, :date, :user_id)";
+        $sql = "INSERT INTO prescribe (product_code, name, product_name, description, dosage, quantity, price, date, user_id)
+                VALUES (:product_code, :name, :product_name, :description, :dosage, :quantity, :price, :date, :user_id)";
 
         try {
             $query = $this->db->connect()->prepare($sql);
@@ -37,6 +40,7 @@ class Prescribe {
             $query->bindParam(':product_code', $this->product_code);
             $query->bindParam(':name', $this->name);
             $query->bindParam(':product_name', $this->product_name);
+            $query->bindParam(':description', $this->description);
             $query->bindParam(':dosage', $this->dosage);
             $query->bindParam(':quantity', $this->quantity);
             $query->bindParam(':price', $this->price);
@@ -56,7 +60,7 @@ class Prescribe {
     function edit() {
         $user_id = $_SESSION['account']['id'];
 
-        $sql = "UPDATE prescribe SET product_code = :product_code, name = :name, product_name = :product_name, 
+        $sql = "UPDATE prescribe SET product_code = :product_code, name = :name, product_name = :product_name, description = :description, 
                 dosage = :dosage, quantity = :quantity, price = :price, date = :date 
                 WHERE id = :id AND user_id = :user_id";
 
@@ -65,6 +69,7 @@ class Prescribe {
         $query->bindParam(':product_code', $this->product_code);
         $query->bindParam(':name', $this->name);
         $query->bindParam(':product_name', $this->product_name);
+        $query->bindParam(':description', $this->description);
         $query->bindParam(':dosage', $this->dosage);
         $query->bindParam(':quantity', $this->quantity);
         $query->bindParam(':price', $this->price);
@@ -108,21 +113,30 @@ class Prescribe {
     }
 
     function showAll() {
+        // Check the role of the logged-in account
+        $role = $_SESSION['account']['role']; // Assuming role is stored in the session
         $user_id = $_SESSION['account']['id'];
-
-        $sql = "SELECT * FROM prescribe WHERE user_id = :user_id ORDER BY id ASC";
-
-        $query = $this->db->connect()->prepare($sql);
-        $query->bindParam(':user_id', $user_id);
-        
+    
+        if ($role == 'admin') { // Role 2 is Admin
+            // Admin sees all prescriptions
+            $sql = "SELECT * FROM prescribe ORDER BY id ASC";
+            $query = $this->db->connect()->prepare($sql);
+        } else {
+            // Regular users see only their own prescriptions
+            $sql = "SELECT * FROM prescribe WHERE user_id = :user_id ORDER BY id ASC";
+            $query = $this->db->connect()->prepare($sql);
+            $query->bindParam(':user_id', $user_id);
+        }
+    
         $data = null;
-
+    
         if ($query->execute()) {
             $data = $query->fetchAll();
         }
-
+    
         return $data;
     }
+    
 
     function codeExist($product_code) {
         $sql = "SELECT COUNT(*) FROM prescribe WHERE product_code = :product_code AND user_id = :user_id";
