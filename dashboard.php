@@ -86,6 +86,7 @@
             flex: 1;
         }
 
+
         /* Dashboard layout */
         .dashboard {
             display: grid;
@@ -135,8 +136,8 @@
     <!-- Main content -->
     <div class="main-content">
         <h1>Admin Dashboard</h1>
-        <p>Welcome to your admin dashboard! Here's a quick overview:</p>
-
+<br>
+<br>
         <!-- Dashboard boxes -->
         <div class="dashboard">
             <div class="dashboard-box">

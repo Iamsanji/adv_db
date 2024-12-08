@@ -113,102 +113,166 @@
 
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle" />
-    <link rel = "stylesheet" href = "styles/landing.css">
-    <title>Edit Prescribe</title>
+    <title>Edit</title>
     <style>
-        .error {
-            color: red;
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
         }
-        
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            width: 90%;
+            max-width: 1000px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            font-weight: bold;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .form-row .error {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #42a5f5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #1e88e5;
+        }
     </style>
 </head>
 <body>
+    <form class="form-container" action="?id=<?= $id ?>" method="post">
+        <div class="form-row">
+            <label for="product_code">Product Code
+                <input type="text" name="product_code" value="<?= $product_code ?>">
+                <?php if (!empty($product_codeErr)): ?>
+                    <span class="error"><?= $product_codeErr ?></span>
+                <?php endif; ?>
+            </label>
+            <label for="name">Name
+                <input type="text" name="name" value="<?= $name ?>">
+                <?php if (!empty($nameErr)): ?>
+                    <span class="error"><?= $nameErr ?></span>
+                <?php endif; ?>
+            </label>
+        </div>
 
+        <div class="form-row">
+            <label for="product_name">Product Name
+                <input type="text" name="product_name" value="<?= $product_name ?>">
+                <?php if (!empty($product_nameErr)): ?>
+                    <span class="error"><?= $product_nameErr ?></span>
+                <?php endif; ?>
+            </label>
+            <label for="description">Description
+                <input type="text" name="description" value="<?= $description ?>">
+                <?php if (!empty($descriptionErr)): ?>
+                    <span class="error"><?= $descriptionErr ?></span>
+                <?php endif; ?>
+            </label>
+        </div>
 
-        <form action="?id=<?= $id ?>" method="post"> <!-- Pass the id in the form action -->
+        <div class="form-row">
+            <label for="dosage">Dosage
+                <select name="dosage" id="dosage">
+                    <option value="">--Select--</option>
+                    <option value="Grams(g)" <?= (isset($dosage) && $dosage == 'Grams(g)') ? 'selected=true' : '' ?>>Grams(g)</option>
+                    <option value="Milligrams(mg)" <?= (isset($dosage) && $dosage == 'Milligrams(mg)') ? 'selected=true' : '' ?>>Milligrams(mg)</option>
+                </select>
+                <?php if (!empty($dosageErr)): ?>
+                    <span class="error"><?= $dosageErr ?></span>
+                <?php endif; ?>
+            </label>
+            <label for="quantity">Quantity
+                <input type="number" name="quantity" value="<?= $quantity ?>">
+                <?php if (!empty($quantityErr)): ?>
+                    <span class="error"><?= $quantityErr ?></span>
+                <?php endif; ?>
+            </label>
+        </div>
 
-            <input type="hidden" name="id" value="<?= $id ?>"> <!-- Add hidden field for id -->
+        <div class="form-row">
+            <label for="price">Price
+                <input type="number" name="price" value="<?= $price ?>">
+                <?php if (!empty($priceErr)): ?>
+                    <span class="error"><?= $priceErr ?></span>
+                <?php endif; ?>
+            </label>
+            <label for="date">Date
+                <input type="date" name="date" value="<?= $date ?>">
+                <?php if (!empty($dateErr)): ?>
+                    <span class="error"><?= $dateErr ?></span>
+                <?php endif; ?>
+            </label>
+        </div>
 
-            <label for="product_code">Product Code</label>
-            <br>
-            <input type="text" name = "product_code" value ="<?= $product_code ?>">
-            
-            <?php if(!empty($product_codeErr)): ?>
-                <span class="error"><?= $product_codeErr ?></span><br>
-            <?php endif; ?>
-            <br>
-            <label for="name">Name</label>
-            <br>
-            <input type="text" name = "name" value ="<?= $name ?>">
-            
-            <?php if(!empty($nameErr)): ?>
-                <span class="error"><?= $nameErr ?></span><br>
-            <?php endif; ?>
-            <br>
-            <label for="product_name">Product Name</label>
-            <br>
+        <div class="form-row">
+            <label for="patient_id">Select Patient
+                <select name="patient_id" id="patient_id">
+                    <option value="">--Select Patient--</option>
+                    <?php
+                    require_once('database.php');
+                    $db = new Database();
+                    $query = $db->connect()->query("SELECT id, first_name, last_name FROM account WHERE role = 'customer'");
+                    while ($row = $query->fetch()) {
+                        echo "<option value='{$row['id']}'>{$row['first_name']} {$row['last_name']}</option>";
+                    }
+                    ?>
+                </select>
+            </label>
+        </div>
 
-            <input type="text" name = "product_name" value ="<?= $product_name ?>">
-            
-            <?php if(!empty($product_nameErr)): ?>
-                <span class="error"><?= $product_nameErr ?></span><br>
-            <?php endif; ?>
-            <br>
-
-            <label for="description">Description</label>
-            <br>
-            <input type="text" name = "description" value ="<?= $description ?>">
-            
-            <?php if(!empty($descriptionErr)): ?>
-                <span class="error"><?= $descriptionErr ?></span><br>
-            <?php endif; ?>
-            <br>
-
-            <label for="dosage">Dosage</label>
-            <br>
-            <select name="dosage" id="dosage">
-                <option value="">--Select--</option>
-                <option value="Grams(g)" <?= (isset($dosage) && $dosage == 'Grams(g)')? 'selected=true' : ''?>>Grams(g)</option>
-                <option value="Milligrams(mg)" <?= (isset($dosage) && $dosage == 'Milligrams(mg)')? 'selected=true' : ''?>>Milligrams(mg)</option>
-            </select>
-            
-            <?php if(!empty($dosageErr)): ?>
-                <span class="error"><?= $dosageErr ?></span><br>
-            <?php endif; ?>
-            <br>
-            <label for="quantity">Quantity</label>
-            <br>
-            <input type="number" name="quantity" value ="<?= $quantity ?>">
-            
-            <?php if(!empty($quantityErr)): ?>
-                <span class="error"><?= $quantityErr ?></span><br>
-            <?php endif; ?>
-            <br>
-            <label for="price">Price</label>
-            <br>
-            <input type="number" name ="price" value ="<?= $price ?>">
-            
-            <?php if(!empty($priceErr)): ?>
-                <span class="error"><?= $priceErr ?></span><br>
-            <?php endif; ?>
-            <br>
-            <label for="date">Date</label>
-            <br>
-            <input type="date" name="date" value ="<?= $date ?>">
-            
-            <?php if(!empty($dateErr)): ?>
-                <span class="error"><?= $dateErr ?></span><br>
-            <?php endif; ?>
-            <br>
-
+        <div class="form-actions">
             <input type="submit" value="Update">
-        </form>
-    
+        </div>
+    </form>
 </body>
 </html>

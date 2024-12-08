@@ -142,7 +142,7 @@
         .add-button {
             display: inline-block; /* Ensures it behaves like an inline element but with block-level styling */
             padding: 10px 20px;
-            background-color: #1abc9c;
+            background-color: #2c3e50;
             color: white;
             text-decoration: none;
             font-size: 16px;
