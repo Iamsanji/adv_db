@@ -17,7 +17,7 @@ class Prescribe {
     public $price = '';
     public $date = '';
 
-
+    
     protected $db;
 
     function __construct() {
