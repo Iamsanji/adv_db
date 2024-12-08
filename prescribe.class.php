@@ -6,7 +6,7 @@ require_once('header.php');
 class Prescribe {
     public $id = '';
     public $user_id = '';
-    //new
+    
     public $admin_id = '';
     public $product_code = '';
     public $name = '';
@@ -17,6 +17,10 @@ class Prescribe {
     public $price = '';
     public $date = '';
 
+    //new dec 8
+    public $status = '';
+    public $duration = '';
+
     
     protected $db;
 
@@ -25,18 +29,74 @@ class Prescribe {
     }
 
     function add() {
-        
-        if (empty($this->user_id)) {
-            echo "User ID is not set in the class.";
-            return false;
-        }
-
-        $sql = "INSERT INTO prescribe (product_code, name, product_name, description, dosage, quantity, price, date, user_id)
-                VALUES (:product_code, :name, :product_name, :description, :dosage, :quantity, :price, :date, :user_id)";
-
+        $currentDate = date('Y-m-d');
+        $endDate = date('Y-m-d', strtotime($this->date . ' + ' . $this->duration . ' days'));
+        $status = ($currentDate > $endDate) ? 'done' : 'not done';
+    
+        $sql = "INSERT INTO prescribe (product_code, name, product_name, description, dosage, quantity, price, duration, date, status, user_id) 
+                VALUES (:product_code, :name, :product_name, :description, :dosage, :quantity, :price, :duration, :date, :status, :user_id)";
+    
         try {
             $query = $this->db->connect()->prepare($sql);
-            
+            $query->bindParam(':product_code', $this->product_code);
+            $query->bindParam(':name', $this->name);
+            $query->bindParam(':product_name', $this->product_name);
+            $query->bindParam(':description', $this->description);
+            $query->bindParam(':dosage', $this->dosage);
+            $query->bindParam(':quantity', $this->quantity);
+            $query->bindParam(':price', $this->price);
+            $query->bindParam(':duration', $this->duration);
+            $query->bindParam(':date', $this->date);
+            $query->bindParam(':status', $status);
+            $query->bindParam(':user_id', $this->user_id);  // Use the selected patient ID
+    
+            if ($query->execute()) {
+                return true;
+            } else {
+                echo "Error: ";
+                print_r($query->errorInfo());
+                return false;
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+    
+    function edit() {
+        session_start();
+        $user_id = $_SESSION['account']['id'];
+    
+        $id = clean_input($_GET['id']);
+        
+        if (empty($id)) {
+            echo "Invalid prescription ID.";
+            return false;
+        }
+    
+        $currentDate = date('Y-m-d');
+
+        $endDate = date('Y-m-d', strtotime($this->date . ' + ' . $this->duration . ' days'));
+    
+        $status = ($currentDate > $endDate) ? 'done' : 'not done';
+    
+        $sql = "UPDATE prescribe 
+                SET product_code = :product_code, 
+                    name = :name, 
+                    product_name = :product_name, 
+                    description = :description, 
+                    dosage = :dosage, 
+                    quantity = :quantity, 
+                    price = :price, 
+                    duration = :duration,
+                    date = :date, 
+                    status = :status 
+                WHERE id = :id";
+    
+    
+        try {
+            $query = $this->db->connect()->prepare($sql);
     
             $query->bindParam(':product_code', $this->product_code);
             $query->bindParam(':name', $this->name);
@@ -46,77 +106,28 @@ class Prescribe {
             $query->bindParam(':quantity', $this->quantity);
             $query->bindParam(':price', $this->price);
             $query->bindParam(':date', $this->date);
-            $query->bindParam(':user_id', $this->user_id); 
-            
-            //new
-            
-            
-            $query->execute();
-
-            return true;
+            $query->bindParam(':duration', $this->duration);
+            $query->bindParam(':status', $status);  // Use the calculated status
+    
+            $query->bindParam(':id', $id);
+    
+            if ($_SESSION['account']['role'] != 'admin') {
+                $query->bindParam(':user_id', $user_id);
+            }
+    
+            if ($query->execute()) {
+                return true;
+            } else {
+                echo "Error: ";
+                print_r($query->errorInfo());
+                return false;
+            }
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             return false;
         }
     }
-
-    function edit() {
-
-            session_start();
-
-            $user_id = $_SESSION['account']['id'];
-            
-            $id = clean_input($_GET['id']);
-            
-            if (empty($id)) {
-                echo "Invalid prescription ID.";
-                return false;
-            }
-
-            $sql = "UPDATE prescribe 
-                    SET product_code = :product_code, 
-                        name = :name, 
-                        product_name = :product_name, 
-                        description = :description, 
-                        dosage = :dosage, 
-                        quantity = :quantity, 
-                        price = :price, 
-                        date = :date 
-                    WHERE id = :id";
-
-            if ($_SESSION['account']['role'] != 'admin') {
-                $sql .= " AND user_id = :user_id";
-            }
-
-            try {
-                $query = $this->db->connect()->prepare($sql);
-
-                $query->bindParam(':product_code', $this->product_code);
-                $query->bindParam(':name', $this->name);
-                $query->bindParam(':product_name', $this->product_name);
-                $query->bindParam(':description', $this->description);
-                $query->bindParam(':dosage', $this->dosage);
-                $query->bindParam(':quantity', $this->quantity);
-                $query->bindParam(':price', $this->price);
-                $query->bindParam(':date', $this->date);
-                $query->bindParam(':id', $id);
-
-                if ($_SESSION['account']['role'] != 'admin') {
-                    $query->bindParam(':user_id', $user_id);
-                }
-
-                if ($query->execute()) {
-                    return true;
-                } else {
-                    echo "Error: ";
-                    print_r($query->errorInfo());
-                    return false;
-                }
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
-                return false;
-            }
-    }
+    
 
     function fetchRecord($recordID) {
         $user_id = $_SESSION['account']['id']; 
@@ -198,6 +209,16 @@ class Prescribe {
     
         return $count > 0;
     }
+
+    //new dec 8
+    public function updateStatus($id, $status) {
+        $sql = "UPDATE prescribe SET status = :status WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':status', $status);
+        $query->bindParam(':id', $id);
+        $query->execute();
+    }
+    
 }
 
 // Uncomment the lines below to test the Prescribe class methods.

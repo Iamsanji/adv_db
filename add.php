@@ -14,12 +14,12 @@
     require_once('functions.php');
     require_once('prescribe.class.php');
 
-    $product_code = $name = $product_name = $description = $dosage = $quantity = $price = $date = '';
+    $product_code = $name = $product_name = $description = $duration = $dosage = $quantity = $price = $date = '';
     $product_codeErr = $nameErr = $product_nameErr = $descriptionErr = $dosageErr = $quantityErr = $priceErr = $dateErr = '';
 
     $prescribeObj = new Prescribe ();
 
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $product_code = clean_input($_POST['product_code']);
         $name = clean_input($_POST['name']);
@@ -28,44 +28,47 @@
         $dosage = clean_input($_POST['dosage']);
         $quantity = clean_input($_POST['quantity']);
         $price = clean_input($_POST['price']);
+        $duration = clean_input($_POST['duration']);
         $date = clean_input($_POST['date']);
-        //new
-        $patient_id = clean_input($_POST['patient_id']);
-
-        if(empty($product_code)){
+        $patient_id = clean_input($_POST['patient_id']);  
+    
+        // Error handling
+        if (empty($product_code)) {
             $product_codeErr = 'Product Code is required';
-        } 
-
-        if(empty($name)){
+        }
+    
+        if (empty($name)) {
             $nameErr = 'Name is required';
         }
-        
-        if(empty($product_name)){
+    
+        if (empty($product_name)) {
             $product_nameErr = 'Product Name is required';
         }
-
-        if(empty($description)){
+    
+        if (empty($description)) {
             $descriptionErr = 'Description is required';
         }
-
-        if(empty($dosage)){
+    
+        if (empty($dosage)) {
             $dosageErr = 'Dosage is required';
         }
-
-        if(empty($quantity)){
+    
+        if (empty($quantity)) {
             $quantityErr = 'Quantity is required';
         }
-
-        if(empty($price)){
+    
+        if (empty($price)) {
             $priceErr = 'Price is required';
         }
-
-        if(empty($date)){
+    
+        if (empty($date)) {
             $dateErr = 'Date is required';
         }
-
-        if(empty($product_codeErr) && empty($nameErr) && empty($product_nameErr) && empty($descriptionErr) && empty($dosageErr) && empty($quantityErr) && empty($priceErr) && empty($dateErr)) {
-
+    
+        // Only proceed if no errors
+        if (empty($product_codeErr) && empty($nameErr) && empty($product_nameErr) && empty($descriptionErr) && empty($dosageErr) && empty($quantityErr) && empty($priceErr) && empty($dateErr)) {
+    
+            // Set the properties of the Prescribe object
             $prescribeObj->product_code = $product_code;
             $prescribeObj->name = $name;
             $prescribeObj->product_name = $product_name;
@@ -74,25 +77,23 @@
             $prescribeObj->quantity = $quantity;
             $prescribeObj->price = $price;
             $prescribeObj->date = $date;
+            $prescribeObj->duration = $duration;
+    
+            $prescribeObj->user_id = $patient_id;  
+    
+            $prescribeObj->admin_id = $user_id;  
+    
+            if ($prescribeObj->add()) {
 
-           // $prescribeObj->user_id = $user_id;
-
-           //new
-           $prescribeObj->user_id = $patient_id; // Set patient ID here, not the admin's
-
-            // Assign admin ID (who is adding the prescription)
-            $prescribeObj->admin_id = $user_id;
-
-            if($prescribeObj->add()) {
-                //user-view
                 header('Location: admin.php');
             } else {
                 echo 'Something went wrong when adding new prescription.';
             }
-
-        } 
-
+    
+        }
+    
     }
+    
 
 ?>
 
@@ -228,6 +229,7 @@
                     <span class="error"><?= $priceErr ?></span>
                 <?php endif; ?>
             </label>
+
             <label for="date">Date
                 <input type="date" name="date" value="<?= $date ?>">
                 <?php if (!empty($dateErr)): ?>
@@ -251,6 +253,9 @@
                 </select>
             </label>
         </div>
+
+        <label for="duration">Duration (Days)</label>
+        <input type="number" name="duration" value="<?= $duration ?>" required>
 
         <div class="form-actions">
             <input type="submit" value="Add">

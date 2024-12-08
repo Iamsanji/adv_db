@@ -14,18 +14,18 @@
     require_once('functions.php');
     require_once('prescribe.class.php');
 
-    $product_code = $name = $product_name = $description = $dosage = $quantity = $price = $date = '';
+    $product_code = $name = $product_name = $description = $dosage = $duration = $quantity = $price = $date = '';
     $product_codeErr = $nameErr = $product_nameErr = $descriptionErr = $dosageErr = $quantityErr = $priceErr = $dateErr = '';
 
     $prescribeObj = new Prescribe ();
 
     if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-        // Handle GET request to fetch and display the product details for editing.
+
         if (isset($_GET['id'])) {
             $id = $_GET['id'];
-            $record = $prescribeObj->fetchRecord($id); // Fetch product details by ID
+            $record = $prescribeObj->fetchRecord($id); 
             if (!empty($record)) {
-                // Populate form fields with existing product details for editing.
+
                 $product_code = $record['product_code'];
                 $name = $record['name'];
                 $product_name = $record['product_name'];
@@ -33,6 +33,7 @@
                 $dosage = $record['dosage'];
                 $quantity = $record['quantity'];
                 $price = $record['price'];
+                $duration = $record['duration'];
                 $date = $record['date'];
 
             } else {
@@ -44,7 +45,7 @@
             exit;
         }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $id = clean_input($_GET['id']); // Ensure that the id comes from GET and not POST
+        $id = clean_input($_GET['id']); 
         $product_code = clean_input($_POST['product_code']);
         $name = clean_input($_POST['name']);
         $product_name = clean_input($_POST['product_name']);
@@ -55,6 +56,8 @@
         $date = clean_input($_POST['date']);
         $patient_id = clean_input($_POST['patient_id']);
 
+       
+        $duration = clean_input($_POST['duration']);
 
         if(empty($product_code)){
             $product_codeErr = 'Product Code is required';
@@ -98,8 +101,11 @@
             $prescribeObj->quantity = $quantity;
             $prescribeObj->price = $price;
             $prescribeObj->date = $date;
-            $prescribeObj->user_id = $patient_id; // Set patient ID here
-            $prescribeObj->admin_id = $user_id; // Admin updating the prescription
+
+            $prescribeObj->duration = $duration;
+
+            $prescribeObj->user_id = $patient_id; 
+            $prescribeObj->admin_id = $user_id; 
 
             if ($prescribeObj->edit()) {
                 header('Location: admin.php');
@@ -254,21 +260,10 @@
             </label>
         </div>
 
-        <div class="form-row">
-            <label for="patient_id">Select Patient
-                <select name="patient_id" id="patient_id">
-                    <option value="">--Select Patient--</option>
-                    <?php
-                    require_once('database.php');
-                    $db = new Database();
-                    $query = $db->connect()->query("SELECT id, first_name, last_name FROM account WHERE role = 'customer'");
-                    while ($row = $query->fetch()) {
-                        echo "<option value='{$row['id']}'>{$row['first_name']} {$row['last_name']}</option>";
-                    }
-                    ?>
-                </select>
-            </label>
-        </div>
+        
+
+        <label for="duration">Duration (Days)</label>
+        <input type="number" name="duration" value="<?= $duration ?>" required>
 
         <div class="form-actions">
             <input type="submit" value="Update">

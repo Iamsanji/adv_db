@@ -11,17 +11,18 @@
     }
 
     require_once 'prescribe.class.php';
-    require_once 'database.php'; // Assuming you have a database.php to handle the connection
+    require_once 'database.php'; 
     $db = new Database();
 
     $sql = $db->connect()->query("SELECT COUNT(*) as total_patients FROM account WHERE role = 'customer'");
     $patients = $sql->fetch();
 
-    // Query for total prescriptions
     $sql = $db->connect()->query("SELECT COUNT(*) as total_prescriptions FROM prescribe");
     $prescriptions = $sql->fetch();
 
-    // Query for active users (patients with active prescriptions)
+    $sql = $db->connect()->query("SELECT COUNT(*) as not_done FROM prescribe WHERE status = 'Not Done'");
+    $notdone = $sql->fetch();
+
     $sql = $db->connect()->query("SELECT COUNT(DISTINCT user_id) as active_users FROM prescribe");
     $active_users = $sql->fetch();
 
@@ -122,7 +123,7 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
+    
     <div class="sidebar">
         <h2><?= 'Welcome ' . $_SESSION['account']['first_name'] ?></h2>
         <br>
@@ -133,12 +134,11 @@
         <a href="logout.php">Logout</a>
     </div>
 
-    <!-- Main content -->
     <div class="main-content">
         <h1>Admin Dashboard</h1>
 <br>
 <br>
-        <!-- Dashboard boxes -->
+
         <div class="dashboard">
             <div class="dashboard-box">
                 <h3>Total Patients</h3>
@@ -151,6 +151,11 @@
             <div class="dashboard-box">
                 <h3>Active Users</h3>
                 <p><?= $active_users['active_users'] ?></p>
+            </div>
+
+            <div class="dashboard-box">
+                <h3>Not Done</h3>
+                <p><?= $notdone['not_done'] ?></p>
             </div>
         </div>
     </div>
