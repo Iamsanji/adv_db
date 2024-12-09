@@ -29,12 +29,21 @@ class Prescribe {
     }
 
     function add() {
+        session_start();
+    
+        // Ensure the admin_id is set in the session
+        if (!isset($_SESSION['account']['id']) || $_SESSION['account']['role'] != 'admin') {
+            die("Error: Admin not logged in or invalid role.");
+        }
+        
+        $admin_id = $_SESSION['account']['id'];
+
         $currentDate = date('Y-m-d');
         $endDate = date('Y-m-d', strtotime($this->date . ' + ' . $this->duration . ' days'));
         $status = ($currentDate > $endDate) ? 'done' : 'not done';
     
-        $sql = "INSERT INTO prescribe (product_code, name, product_name, description, dosage, quantity, price, duration, date, status, user_id) 
-                VALUES (:product_code, :name, :product_name, :description, :dosage, :quantity, :price, :duration, :date, :status, :user_id)";
+        $sql = "INSERT INTO prescribe (product_code, name, product_name, description, dosage, quantity, price, duration, date, status, admin_id, user_id) 
+                VALUES (:product_code, :name, :product_name, :description, :dosage, :quantity, :price, :duration, :date, :status, :admin_id, :user_id)";
     
         try {
             $query = $this->db->connect()->prepare($sql);
@@ -48,6 +57,8 @@ class Prescribe {
             $query->bindParam(':duration', $this->duration);
             $query->bindParam(':date', $this->date);
             $query->bindParam(':status', $status);
+            //new dec 9
+            $query->bindParam(':admin_id', $admin_id);
             $query->bindParam(':user_id', $this->user_id);  // Use the selected patient ID
     
             if ($query->execute()) {
@@ -171,19 +182,24 @@ class Prescribe {
     }
 
     function showAll() {
-        
-        $role = $_SESSION['account']['role']; 
-        $user_id = $_SESSION['account']['id'];
+        // Ensure the session is active
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     
-        if ($role == 'admin') { 
-
-            $sql = "SELECT * FROM prescribe ORDER BY id ASC";
+        $role = $_SESSION['account']['role']; 
+        $admin_id = $_SESSION['account']['id']; // Use admin_id from the session
+    
+        if ($role == 'admin') {
+            // Admin can only see prescriptions they added
+            $sql = "SELECT * FROM prescribe WHERE admin_id = :admin_id ORDER BY id ASC";
             $query = $this->db->connect()->prepare($sql);
+            $query->bindParam(':admin_id', $admin_id);
         } else {
-            
+            // Users can only see prescriptions linked to their user_id
             $sql = "SELECT * FROM prescribe WHERE user_id = :user_id ORDER BY id ASC";
             $query = $this->db->connect()->prepare($sql);
-            $query->bindParam(':user_id', $user_id);
+            $query->bindParam(':user_id', $admin_id);
         }
     
         $data = null;
@@ -194,6 +210,8 @@ class Prescribe {
     
         return $data;
     }
+    
+    
     
 
     function codeExist($product_code) {

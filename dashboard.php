@@ -14,19 +14,24 @@
     require_once 'database.php'; 
     $db = new Database();
 
+    $admin_id = $_SESSION['account']['id'];
+
+
     $sql = $db->connect()->query("SELECT COUNT(*) as total_patients FROM account WHERE role = 'customer'");
+    $sql->bindParam(':admin_id', $admin_id);
     $patients = $sql->fetch();
 
     $sql = $db->connect()->query("SELECT COUNT(*) as total_prescriptions FROM prescribe");
+    $sql->bindParam(':admin_id', $admin_id);
     $prescriptions = $sql->fetch();
 
     $sql = $db->connect()->query("SELECT COUNT(*) as not_done FROM prescribe WHERE status = 'Not Done'");
+    $sql->bindParam(':admin_id', $admin_id);
     $notdone = $sql->fetch();
 
     $sql = $db->connect()->query("SELECT COUNT(DISTINCT user_id) as active_users FROM prescribe");
+    $sql->bindParam(':admin_id', $admin_id);
     $active_users = $sql->fetch();
-
-    
 
 ?>
 

@@ -153,15 +153,15 @@ class Account {
 
 /*
 $obj = new Account();
-$obj->first_name = 'Josh';
-$obj->last_name = 'Admin';
+$obj->first_name = 'Admin2';
+$obj->last_name = 'Admin2';
 $obj->sex = '';
 $obj->age = '';
 $obj->contact_number = '';
 $obj->pwd_id = '';
 $obj->address = '';
-$obj->username = 'admin';
-$obj->password = 'admin';
+$obj->username = 'admin2';
+$obj->password = 'admin2';
 $obj->role = 'admin';
 $obj->is_staff = true;
 $obj->is_admin = true;
@@ -170,8 +170,8 @@ if ($obj->add()) {
     echo "Account added successfully.";
 } else {
     echo "Failed to add account.";
-}
-*/
+}*/
+
 
 // $obj = new Account();
 
