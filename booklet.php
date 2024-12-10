@@ -21,6 +21,70 @@
     <title>Booklet</title>
     <style>
 
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+                    /* Table styles */
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .styled-table th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+        }
+
+        .styled-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .styled-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .styled-table td {
+            color: black;
+            font-size: 14px;
+        }
+
+        .styled-table td, .styled-table th {
+            text-align: center;
+        }
+
+        .styled-table td:last-child {
+            color: #27ae60;  /* Add a green color for total values */
+            
+        }
+
+        .styled-table td, .styled-table th {
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Price and Total columns with specific styles */
+        .styled-table td:nth-child(8),
+        .styled-table td:nth-child(9) {
+            color: #e74c3c; /* Red color for price and total */
+            font-weight: bold;
+        }
+
+        /* Optional: Adjusting number format for price and total */
+        .styled-table td:nth-child(8), .styled-table td:nth-child(9) {
+            text-align: right;
+        }
+
     </style>    
 </head>
 <body>
@@ -30,15 +94,24 @@
             <nav class="title">
                 <h1>O<span>B</span></h1>
             </nav>
-            
             <nav class="menu">
                 <a href="user-landing.php">Home</a>
                 <a href="booklet.php">Booklet</a>
-                <a href="profile.php"><span class="material-symbols-outlined" style = "color: black;">account_circle</span></a>
+
+                <!-- Profile with dropdown -->
+                <div class="profile-dropdown">
+                    <a href="profile.php">
+                        <span class="material-symbols-outlined" style="color: black;">account_circle</span>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="profile.php">Profile</a>
+                        <a href="logout.php">Logout</a>
+                    </div>
+                </div>
             </nav>
-            
         </nav>
     </header>
+
 
     <?php
         require_once 'prescribe.class.php';
@@ -49,7 +122,7 @@
 
     ?>
 
-        <table border = 1>
+        <table class="styled-table">
 
             <tr>
 

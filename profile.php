@@ -126,6 +126,143 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile']) ) {
             transform: scale(1.1); /* Slight zoom effect on hover */
         }
 
+        /* General profile container */
+.profile-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Profile picture section */
+.profile-left {
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-picture-container {
+    width: 100%;
+    text-align: center;
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #2c3e50;
+}
+
+/* Profile form section */
+.profile-right {
+    width: 65%;
+}
+
+h2 {
+    text-align: left;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Form styling */
+.profile-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 15px;
+}
+
+/* Form group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #3498db;
+}
+
+/* Adjust form layout for smaller screens */
+@media (max-width: 768px) {
+    .profile-container {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .profile-left, .profile-right {
+        width: 100%;
+    }
+
+    .profile-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Submit button */
+.form-actions {
+    grid-column: span 2;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.form-actions input[type="submit"] {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #3498db;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.form-actions input[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+/* Logout link styling */
+.logout-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.logout-link a {
+    font-size: 16px;
+    color: #e74c3c;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.logout-link a:hover {
+    text-decoration: underline;
+}
+
+
+
 
     </style>
 
@@ -148,63 +285,111 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile']) ) {
             <nav class="menu">
                 <a href="user-landing.php">Home</a>
                 <a href="booklet.php">Booklet</a>
-                <a href="profile.php"><span class="material-symbols-outlined" style="color: black;">account_circle</span></a>
+
+                <!-- Profile with dropdown -->
+                <div class="profile-dropdown">
+                    <a href="profile.php">
+                        <span class="material-symbols-outlined" style="color: black;">account_circle</span>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="profile.php">Profile</a>
+                        <a href="logout.php">Logout</a>
+                    </div>
+                </div>
             </nav>
         </nav>
     </header>
 
-    <main>
-        <div class="profile-container">
 
-        <div class="profile-picture-container">
-            <img src="<?= htmlspecialchars($profilePicture) ?>" alt="Profile Picture" class="profile-picture">
+    <main>
+    <div class="profile-container">
+
+        <!-- Profile Picture Section -->
+        <div class="profile-left">
+            <div class="profile-picture-container">
+                <img src="<?= htmlspecialchars($profilePicture) ?>" alt="Profile Picture" class="profile-picture">
+            </div>
         </div>
 
-            <h2>Profile</h2>
-                                        <!--I add 7PM   enctype="multipart/form-data"-->
-                <form action="profile.php" method="POST" enctype="multipart/form-data">
+        
 
+        <!-- Profile Form Section -->
+        <div class="profile-right">
+            <h2>Profile</h2>
+
+            <form action="profile.php" method="POST" enctype="multipart/form-data" class="profile-form">
+
+                <div class="form-group">
                     <label for="profilePicture">Profile Picture:</label>
                     <input type="file" name="profilePicture" id="profilePicture" accept="image/*">
+                </div>
 
+                <div class="form-group">
                     <label for="first_name">First Name:</label>
                     <input type="text" name="first_name" id="first_name" value="<?= htmlspecialchars($user_data['first_name']) ?>">
+                </div>
 
+                <div class="form-group">
                     <label for="last_name">Last Name:</label>
                     <input type="text" name="last_name" id="last_name" value="<?= htmlspecialchars($user_data['last_name']) ?>">
+                </div>
 
+                <div class="form-group">
                     <label for="sex">Sex:</label>
                     <select name="sex" id="sex">
                         <option value="Male" <?= $user_data['sex'] == 'Male' ? 'selected' : '' ?>>Male</option>
                         <option value="Female" <?= $user_data['sex'] == 'Female' ? 'selected' : '' ?>>Female</option>
                     </select>
+                </div>
 
+                <div class="form-group">
                     <label for="age">Age:</label>
                     <input type="number" name="age" id="age" value="<?= htmlspecialchars($user_data['age']) ?>">
+                </div>
 
+                <div class="form-group">
                     <label for="contact_number">Contact Number:</label>
                     <input type="tel" name="contact_number" id="contact_number" value="<?= htmlspecialchars($user_data['contact_number']) ?>">
+                </div>
 
+                <div class="form-group">
                     <label for="pwd_id">PWD ID:</label>
                     <input type="text" name="pwd_id" id="pwd_id" value="<?= htmlspecialchars($user_data['pwd_id']) ?>">
+                </div>
 
+                <div class="form-group">
                     <label for="address">Address:</label>
                     <input type="text" name="address" id="address" value="<?= htmlspecialchars($user_data['address']) ?>">
+                </div>
 
+                <div class="form-group">
                     <label for="username">Username:</label>
                     <input type="text" name="username" id="username" value="<?= htmlspecialchars($user_data['username']) ?>" disabled>
+                </div>
 
+                <div class="form-group">
                     <label for="password">New Password (leave blank to keep current):</label>
                     <input type="password" name="password" id="password" value=""> 
+                </div>
 
+                <div class="form-actions">
                     <input type="submit" value="Update Profile" name="update_profile">
+                    
+                </div>
+                
 
-                </form>
-
+            </form>
 
         </div>
-    </main>
-    <a href="logout.php">logout</a>
+
+        
+
+    </div>
+
+    
+</main>
+
+
 
 </body>
 </html>

@@ -1,10 +1,7 @@
+/* Reset padding and margin for all elements */
 * {
     padding: 0;
     margin: 0;
-}
-
-span {
-    color: red;
 }
 
 /* Style for the outer header */
@@ -42,6 +39,47 @@ span {
     color: #4CAF50; /* Optional hover effect */
 }
 
+/* Profile dropdown container */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-dropdown .material-symbols-outlined {
+    cursor: pointer;
+    font-size: 30px;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    min-width: 160px;
+    z-index: 1;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown item styling */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Show the dropdown when hovering over the profile */
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Container for content below the header */
 .container {
     background-color: wheat;
     height: 60vh;
@@ -59,4 +97,3 @@ h3 {
     font-weight: 700;
     font-size: 150px;
 }
-
