@@ -96,7 +96,7 @@ if (isset($_SESSION['account']) && $_SESSION['account']['role'] == 'staff') {
         <h2>Welcome <?= $_SESSION['account']['first_name'] ?></h2>
         <br>
         <a href="secretary.php" class="active">Dashboard</a>
-        <a href="secretary-dashboard.php">Patients</a> <!-- Limited access to view patients -->
+        <a href="secretary-dashboard.php">Patients</a>
         <a href="logout.php">Logout</a>
     </div>
 

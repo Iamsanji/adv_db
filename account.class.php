@@ -91,8 +91,6 @@ class Account {
         return $data;
     }
 
-    //fetchandupdate--recently add today
-
     function fetchById($user_id){
         $sql = "SELECT * FROM account WHERE id = :user_id LIMIT 1;";
         $query = $this->db->connect()->prepare($sql);
@@ -104,7 +102,6 @@ class Account {
         return $data;
     }
     
-
     public function update($user_id) {
         $sql = "UPDATE account SET first_name = :first_name, last_name = :last_name, sex = :sex, age = :age, contact_number = :contact_number, pwd_id = :pwd_id, address = :address, username = :username, password = :password WHERE id = :id";
         $query = $this->db->connect()->prepare($sql);
@@ -122,8 +119,6 @@ class Account {
     
         return $query->execute();
     }
-
-    // 7pm
 
     public function updateProfilePicture($user_id, $filePath) {
         $sql = "UPDATE account SET profile_picture = :profile_picture WHERE id = :id";
@@ -146,7 +141,24 @@ class Account {
         return $data['profile_picture'] ?? 'uploads/default.jpg';
     }
     
+    //new dec 10
+    public function getDoctors() {
+        $sql = "SELECT id, first_name, last_name, username FROM account WHERE role = 'admin' ORDER BY id ASC";
+        $query = $this->db->connect()->prepare($sql);
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    } 
     
+    public function addDoctor($firstName, $lastName, $username, $password) {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO account (first_name, last_name, username, password, role) VALUES (:first_name, :last_name, :username, :password, 'admin')";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':first_name', $firstName);
+        $query->bindParam(':last_name', $lastName);
+        $query->bindParam(':username', $username);
+        $query->bindParam(':password', $hashedPassword);
+        return $query->execute();
+    }
     
     
 }

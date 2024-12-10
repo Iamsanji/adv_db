@@ -160,6 +160,76 @@ if ($isSuperAdmin) {
             outline: none;
             border: 2px solid #1abc9c;
         }
+
+        .search {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+                /* Container for the search form */
+        .search {
+            display: flex;
+            justify-content: flex-start; /* Align items to the left */
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Style for the search input field */
+        .search input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px; /* Rounded corners on the left */
+            width: 300px; /* Adjust the width of the input field */
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        /* Focus effect for the input field */
+        .search input[type="text"]:focus {
+            border-color: #1abc9c; /* Highlight border on focus */
+        }
+
+        /* Style for the search button */
+        .search button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0; /* Rounded corners on the right */
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        /* Hover and active effects for the button */
+        .search button:hover {
+            background-color: #16a085;
+        }
+
+        .search button:active {
+            transform: scale(0.98);
+        }
+
+        /* Responsive design */
+        @media screen and (max-width: 768px) {
+            .search input[type="text"] {
+                width: 100%; /* Full width on smaller screens */
+                border-radius: 5px; /* Reset border radius */
+                margin-bottom: 10px; /* Add spacing between input and button */
+            }
+
+            .search button {
+                border-radius: 5px; /* Reset border radius */
+                width: 100%; /* Full width on smaller screens */
+            }
+
+            .search {
+                flex-direction: column; /* Stack input and button vertically */
+                align-items: stretch;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -169,17 +239,32 @@ if ($isSuperAdmin) {
     <br>
     <a href="dashboard.php">Dashboard</a>
     <a href="patients.php">Patients</a>
-    <a href="admin.php" class="active">Prescriptions</a>
+    <a href="admin.php" class="<?= basename($_SERVER['PHP_SELF']) == 'admin.php' ? 'active' : '' ?>">Prescriptions</a>
+    <?php if ($_SESSION['account']['role'] == 'superadmin'): ?>
+        <a href="doctors.php" class="<?= basename($_SERVER['PHP_SELF']) == 'doctors.php' ? 'active' : '' ?>">Doctors</a>
+    <?php endif; ?>
     <a href="admin-profile.php">Profile</a>
     <a href="logout.php">Logout</a>
 </div>
 
+
 <div class="main-content">
     <h1>Prescriptions</h1>
 
-    <?php if (!$isSuperAdmin): ?>
-        <a href="add.php" class="add-button">Add</a>
-    <?php endif; ?>
+    
+
+    <div class="search">
+
+        <?php if (!$isSuperAdmin): ?>
+            <a href="add.php" class="add-button">Add</a>
+        <?php endif; ?>
+        
+        <form method="GET" action="">
+        <input type="text" name="search" id="search" placeholder="Search by name" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+        <button type="submit">Search</button>
+    </form>
+
+    </div>    
 
     <table border="1">
         <thead>

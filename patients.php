@@ -111,14 +111,18 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2><?= 'Welcome ' . $_SESSION['account']['first_name'] ?></h2>
-        <br>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="patients.php" class="active">Patients</a>
-        <a href="admin.php">Prescriptions</a>
-        <a href="admin-profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+    <h2><?= 'Welcome ' . $_SESSION['account']['first_name'] ?></h2>
+    <br>
+    <a href="dashboard.php">Dashboard</a>
+    <a href="patients.php">Patients</a>
+    <a href="admin.php" class="<?= basename($_SERVER['PHP_SELF']) == 'admin.php' ? 'active' : '' ?>">Prescriptions</a>
+    <?php if ($_SESSION['account']['role'] == 'superadmin'): ?>
+        <a href="doctors.php" class="<?= basename($_SERVER['PHP_SELF']) == 'doctors.php' ? 'active' : '' ?>">Doctors</a>
+    <?php endif; ?>
+    <a href="admin-profile.php">Profile</a>
+    <a href="logout.php">Logout</a>
     </div>
+
 
     <!-- Main content -->
     <div class="main-content">

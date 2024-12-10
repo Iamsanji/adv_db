@@ -185,43 +185,47 @@ class Prescribe {
         return $query->execute();
     }
 
-    public function showAll()   {
-            // Ensure the session is active
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
+    public function showAll() {
 
-            $role = $_SESSION['account']['role']; 
-            $admin_id = $_SESSION['account']['id']; // Use admin_id from the session
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    
+        $role = $_SESSION['account']['role']; 
+        $admin_id = $_SESSION['account']['id']; 
+        $searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
+    
+        if ($role == 'superadmin') {
 
-            // Check if the user is a superadmin
-            if ($role == 'superadmin') {
-                // Superadmins can see all prescriptions
-                $sql = "SELECT * FROM prescribe ORDER BY id ASC";
-                $query = $this->db->connect()->prepare($sql);
-            } elseif ($role == 'admin') {
-                // Admins can only see prescriptions they added
-                $sql = "SELECT * FROM prescribe WHERE admin_id = :admin_id ORDER BY id ASC";
-                $query = $this->db->connect()->prepare($sql);
-                $query->bindParam(':admin_id', $admin_id);
-            } else {
-                // Users can only see prescriptions linked to their user_id
-                $sql = "SELECT * FROM prescribe WHERE user_id = :user_id ORDER BY id ASC";
-                $query = $this->db->connect()->prepare($sql);
-                $query->bindParam(':user_id', $admin_id);  // Adjust this if necessary for a regular user
-            }
+            $sql = "SELECT * FROM prescribe WHERE name LIKE :searchTerm ORDER BY id ASC";
+            $query = $this->db->connect()->prepare($sql);
+            $query->bindParam(':searchTerm', $wildcardSearch);
+        } elseif ($role == 'admin') {
 
-            $data = null;
+            $sql = "SELECT * FROM prescribe WHERE admin_id = :admin_id AND name LIKE :searchTerm ORDER BY id ASC";
+            $query = $this->db->connect()->prepare($sql);
+            $query->bindParam(':admin_id', $admin_id);
+            $query->bindParam(':searchTerm', $wildcardSearch);
+        } else {
 
-            if ($query->execute()) {
-                $data = $query->fetchAll();
-            }
-
-            return $data;
+            $sql = "SELECT * FROM prescribe WHERE user_id = :user_id AND name LIKE :searchTerm ORDER BY id ASC";
+            $query = $this->db->connect()->prepare($sql);
+            $query->bindParam(':user_id', $admin_id);
+            $query->bindParam(':searchTerm', $wildcardSearch);
+        }
+    
+        $wildcardSearch = '%' . $searchTerm . '%';
+    
+        $data = null;
+    
+        if ($query->execute()) {
+            $data = $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+    
+        return $data;
     }
-
-
-
+    
+    
     public function showByAdmin($adminId)   {
     $sql = "SELECT * FROM prescribe WHERE admin_id = :admin_id";
     $query = $this->db->connect()->prepare($sql);
@@ -253,6 +257,21 @@ class Prescribe {
         $query->bindParam(':id', $id);
         $query->execute();
     }
+
+    public function fetchStatus() {
+        // Fetch distinct statuses from the prescribe table
+        $sql = "SELECT DISTINCT status AS id, status AS name FROM prescribe ORDER BY status ASC;";
+        
+        $query = $this->db->connect()->prepare($sql);
+        $data = null;
+        
+        if ($query->execute()) {
+            $data = $query->fetchAll(PDO::FETCH_ASSOC); 
+        }
+        
+        return $data;
+    }
+    
     
 }
 

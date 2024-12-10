@@ -10,22 +10,17 @@
         header('location: signin.php');
     }
 
-    // Include the database connection file
     require_once 'database.php';
     $db = new Database();
 
-    // Get the logged-in admin's ID from the session
     $admin_id = $_SESSION['account']['id'];
 
-    // Query to fetch admin profile details
     $stmt = $db->connect()->prepare("SELECT id, first_name, last_name, username, contact_number, address FROM account WHERE id = :id");
     $stmt->execute(['id' => $admin_id]);
 
-    // Fetch the admin's profile details
     $admin = $stmt->fetch();
 
     if (!$admin) {
-        // Redirect if no admin is found
         header('location: dashboard.php');
         exit();
     }    
@@ -126,14 +121,18 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2><?= 'Welcome ' . $_SESSION['account']['first_name'] ?></h2>
-        <br>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="patients.php">Patients</a>
-        <a href="admin.php">Prescriptions</a>
-        <a href="admin-profile.php"  class="active">Profile</a>
-        <a href="logout.php">Logout</a>
+    <h2><?= 'Welcome ' . $_SESSION['account']['first_name'] ?></h2>
+    <br>
+    <a href="dashboard.php">Dashboard</a>
+    <a href="patients.php">Patients</a>
+    <a href="admin.php" class="<?= basename($_SERVER['PHP_SELF']) == 'admin.php' ? 'active' : '' ?>">Prescriptions</a>
+    <?php if ($_SESSION['account']['role'] == 'superadmin'): ?>
+        <a href="doctors.php" class="<?= basename($_SERVER['PHP_SELF']) == 'doctors.php' ? 'active' : '' ?>">Doctors</a>
+    <?php endif; ?>
+    <a href="admin-profile.php">Profile</a>
+    <a href="logout.php">Logout</a>
     </div>
+
 
     <!-- Main content -->
     <div class="main-content">

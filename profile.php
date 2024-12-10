@@ -286,7 +286,6 @@ h2 {
                 <a href="user-landing.php">Home</a>
                 <a href="booklet.php">Booklet</a>
 
-                <!-- Profile with dropdown -->
                 <div class="profile-dropdown">
                     <a href="profile.php">
                         <span class="material-symbols-outlined" style="color: black;">account_circle</span>
@@ -304,7 +303,6 @@ h2 {
     <main>
     <div class="profile-container">
 
-        <!-- Profile Picture Section -->
         <div class="profile-left">
             <div class="profile-picture-container">
                 <img src="<?= htmlspecialchars($profilePicture) ?>" alt="Profile Picture" class="profile-picture">
@@ -313,7 +311,6 @@ h2 {
 
         
 
-        <!-- Profile Form Section -->
         <div class="profile-right">
             <h2>Profile</h2>
 
