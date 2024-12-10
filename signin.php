@@ -19,21 +19,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Redirect based on role
         if ($data['role'] === 'customer') {
             header('location: user-landing.php'); 
+        } elseif ($data['role'] === 'staff') {
+            header('location: secretary-dashboard.php'); // Redirect to secretary dashboard
         } else {
-            header('location: admin.php'); 
+            header('location: dashboard.php'); // Admin or superadmin
         }
     } else {
         $loginErr = 'Invalid username/password';
     }
 } else {
     if (isset($_SESSION['account'])) {
-        if ($_SESSION['account']['is_staff']) {
-            header('location: admin.php'); // 
+        // Check the role and redirect accordingly
+        if ($_SESSION['account']['role'] === 'staff') {
+            header('location: secretary.php'); // Redirect to secretary dashboard
+        } elseif ($_SESSION['account']['role'] === 'customer') {
+            header('location: user-landing.php'); // Redirect to customer user landing page
         } else {
-            header('location: user-landing.php'); 
+            header('location: dashboard.php'); // Admin or superadmin
         }
     }
 }
+
 ?>
 
 <!DOCTYPE html>

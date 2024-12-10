@@ -21,7 +21,8 @@ class Prescribe {
     public $status = '';
     public $duration = '';
 
-    
+    //new dec 10
+
     protected $db;
 
     function __construct() {
@@ -61,6 +62,7 @@ class Prescribe {
             $query->bindParam(':admin_id', $admin_id);
             $query->bindParam(':user_id', $this->user_id);  // Use the selected patient ID
     
+
             if ($query->execute()) {
                 return true;
             } else {
@@ -119,6 +121,8 @@ class Prescribe {
             $query->bindParam(':date', $this->date);
             $query->bindParam(':duration', $this->duration);
             $query->bindParam(':status', $status);  // Use the calculated status
+
+           // $query->bindParam(':types', $types);
     
             $query->bindParam(':id', $id);
     
@@ -181,38 +185,51 @@ class Prescribe {
         return $query->execute();
     }
 
-    function showAll() {
-        // Ensure the session is active
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-    
-        $role = $_SESSION['account']['role']; 
-        $admin_id = $_SESSION['account']['id']; // Use admin_id from the session
-    
-        if ($role == 'admin') {
-            // Admin can only see prescriptions they added
-            $sql = "SELECT * FROM prescribe WHERE admin_id = :admin_id ORDER BY id ASC";
-            $query = $this->db->connect()->prepare($sql);
-            $query->bindParam(':admin_id', $admin_id);
-        } else {
-            // Users can only see prescriptions linked to their user_id
-            $sql = "SELECT * FROM prescribe WHERE user_id = :user_id ORDER BY id ASC";
-            $query = $this->db->connect()->prepare($sql);
-            $query->bindParam(':user_id', $admin_id);
-        }
-    
-        $data = null;
-    
-        if ($query->execute()) {
-            $data = $query->fetchAll();
-        }
-    
-        return $data;
+    public function showAll()   {
+            // Ensure the session is active
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
+            $role = $_SESSION['account']['role']; 
+            $admin_id = $_SESSION['account']['id']; // Use admin_id from the session
+
+            // Check if the user is a superadmin
+            if ($role == 'superadmin') {
+                // Superadmins can see all prescriptions
+                $sql = "SELECT * FROM prescribe ORDER BY id ASC";
+                $query = $this->db->connect()->prepare($sql);
+            } elseif ($role == 'admin') {
+                // Admins can only see prescriptions they added
+                $sql = "SELECT * FROM prescribe WHERE admin_id = :admin_id ORDER BY id ASC";
+                $query = $this->db->connect()->prepare($sql);
+                $query->bindParam(':admin_id', $admin_id);
+            } else {
+                // Users can only see prescriptions linked to their user_id
+                $sql = "SELECT * FROM prescribe WHERE user_id = :user_id ORDER BY id ASC";
+                $query = $this->db->connect()->prepare($sql);
+                $query->bindParam(':user_id', $admin_id);  // Adjust this if necessary for a regular user
+            }
+
+            $data = null;
+
+            if ($query->execute()) {
+                $data = $query->fetchAll();
+            }
+
+            return $data;
     }
-    
-    
-    
+
+
+
+    public function showByAdmin($adminId)   {
+    $sql = "SELECT * FROM prescribe WHERE admin_id = :admin_id";
+    $query = $this->db->connect()->prepare($sql);
+    $query->bindParam(':admin_id', $adminId, PDO::PARAM_INT);
+    $query->execute();
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     function codeExist($product_code) {
         $sql = "SELECT COUNT(*) FROM prescribe WHERE product_code = :product_code AND user_id = :user_id";

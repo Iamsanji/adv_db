@@ -153,18 +153,18 @@ class Account {
 
 /*
 $obj = new Account();
-$obj->first_name = 'Admin2';
-$obj->last_name = 'Admin2';
+$obj->first_name = 'Secretary';
+$obj->last_name = 'sec';
 $obj->sex = '';
 $obj->age = '';
 $obj->contact_number = '';
 $obj->pwd_id = '';
 $obj->address = '';
-$obj->username = 'admin2';
-$obj->password = 'admin2';
-$obj->role = 'admin';
+$obj->username = 'staff';
+$obj->password = 'staff';
+$obj->role = 'staff';
 $obj->is_staff = true;
-$obj->is_admin = true;
+$obj->is_admin = false;
 
 if ($obj->add()) {
     echo "Account added successfully.";

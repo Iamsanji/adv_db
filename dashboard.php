@@ -64,7 +64,7 @@
 
         .sidebar h2 {
             padding: 1rem;
-            
+            text-align: center;
         }
 
         /* Sidebar links */
@@ -140,9 +140,9 @@
     </div>
 
     <div class="main-content">
-        <h1>Admin Dashboard</h1>
-<br>
-<br>
+    <h1><?= 'Dr.' . $_SESSION['account']['first_name'] ?> Dashboard</h1>
+    <br>
+    <br>
 
         <div class="dashboard">
             <div class="dashboard-box">

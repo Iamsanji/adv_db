@@ -2,11 +2,12 @@
 
 session_start();
 
-if(isset($_SESSION['account'])){
-    if(!$_SESSION['account']['is_staff']){
+if (isset($_SESSION['account'])) {
+    // Redirect if not staff or superadmin
+    if (!$_SESSION['account']['is_staff']) {
         header('location: signin.php');
     }
-}else{
+} else {
     header('location: signin.php');
 }
 
@@ -14,20 +15,34 @@ require_once 'prescribe.class.php';
 
 $prescribeObj = new Prescribe();
 
-$array = $prescribeObj->showAll();
-
 $currentDate = date('Y-m-d');
-//dec 8
+
+// Check if user is superadmin
+$isSuperAdmin = $_SESSION['account']['role'] == 'superadmin'; // Adjust this condition based on your role implementation.
+
+if ($isSuperAdmin) {
+    // Fetch all prescriptions
+    $array = $prescribeObj->showAll();
+} else {
+    // Fetch only prescriptions added by the current admin
+    $adminId = $_SESSION['account']['id']; // Assuming admin's ID is stored in the session.
+    $array = $prescribeObj->showByAdmin($adminId);
+}
+
+// Update prescription status logic
 foreach ($array as $arr) {
     $endDate = date('Y-m-d', strtotime($arr['date'] . ' + ' . $arr['duration'] . ' days'));
     if ($currentDate >= $endDate && $arr['status'] != 'Done') {
-
         $prescribeObj->updateStatus($arr['id'], 'Done');
     }
 }
 
-$array = $prescribeObj->showAll(); 
-
+// Fetch prescriptions again to reflect status updates
+if ($isSuperAdmin) {
+    $array = $prescribeObj->showAll();
+} else {
+    $array = $prescribeObj->showByAdmin($adminId);
+}
 
 ?>
 
@@ -109,8 +124,9 @@ $array = $prescribeObj->showAll();
             background-color: #f2f2f2;
         }
 
-        .sidebar h2{
+        .sidebar h2 {
             padding: 1rem;
+            text-align: center;
         }
 
         /* Add button styles */
@@ -144,78 +160,83 @@ $array = $prescribeObj->showAll();
             outline: none;
             border: 2px solid #1abc9c;
         }
-
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2><?= 'Welcome ' . $_SESSION['account']['first_name'] ?></h2>
-        <br>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="patients.php">Patients</a>
-        <a href="admin.php" class="active">Prescriptions</a>
-        <a href="admin-profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
-    </div>
+<div class="sidebar">
+    <h2><?= 'Welcome ' . $_SESSION['account']['first_name'] ?></h2>
+    <br>
+    <a href="dashboard.php">Dashboard</a>
+    <a href="patients.php">Patients</a>
+    <a href="admin.php" class="active">Prescriptions</a>
+    <a href="admin-profile.php">Profile</a>
+    <a href="logout.php">Logout</a>
+</div>
 
-    <div class="main-content">
-        <h1>Prescriptions</h1>
-        
+<div class="main-content">
+    <h1>Prescriptions</h1>
+
+    <?php if (!$isSuperAdmin): ?>
         <a href="add.php" class="add-button">Add</a>
-        <table border = 1>
-            <thead>
-                <tr>
-                    <th>ID</th>
+    <?php endif; ?>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <?php if ($isSuperAdmin): ?>
                     <th>User ID</th>
-                    <th>Product Code</th>
-                    <th>Name</th>
-                    <th>Product Name</th>
-                    <th>Description</th>
-                    <th>Dosage</th>
-                    <th>Quantity</th>
-                    <th>Date</th>
-                    <th>Status</th>
+                <?php endif; ?>
+                <th>Product Code</th>
+                <th>Doctor Name</th>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>Dosage</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Duration</th>
+                <th>Status</th>
+                <?php if (!$isSuperAdmin): ?>
                     <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                    $i = 1;
-                    foreach($array as $arr) {
-
-
-                        //new dec 8
-                        $currentDate = date('Y-m-d');
-                        $endDate = date('Y-m-d', strtotime($arr['date'] . ' + ' . $arr['duration'] . ' days'));
-                        $status = ($currentDate >= $endDate) ? 'Done' : $arr['status']; 
-                
+                <?php endif; ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $i = 1;
+            foreach ($array as $arr) {
+                // Logic for updating status
+                $currentDate = date('Y-m-d');
+                $endDate = date('Y-m-d', strtotime($arr['date'] . ' + ' . $arr['duration'] . ' days'));
+                $status = ($currentDate >= $endDate) ? 'Done' : $arr['status'];
                 ?>
-                    <tr>
-                        <td><?= $i ?></td>
+                <tr>
+                    <td><?= $i ?></td>
+                    <?php if ($isSuperAdmin): ?>
                         <td><?= $arr['user_id'] ?></td>
-                        <td><?= $arr['product_code'] ?></td>
-                        <td><?= $arr['name'] ?></td>
-                        <td><?= $arr['product_name'] ?></td>
-                        <td><?= $arr['description'] ?></td>
-                        <td><?= $arr['dosage'] ?></td>
-                        <td><?= $arr['quantity'] ?></td>
-                        <td><?= $arr['date'] ?></td>
-                        <td>
-                            <?= $status ?>
-                        </td>
+                    <?php endif; ?>
+                    <td><?= $arr['product_code'] ?></td>
+                    <td><?= $arr['name'] ?></td>
+                    <td><?= $arr['product_name'] ?></td>
+                    <td><?= $arr['description'] ?></td>
+                    <td><?= $arr['dosage'] ?></td>
+                    <td><?= $arr['quantity'] ?> pcs</td>
+                    <td><?= $arr['date'] ?></td>
+                    <td><?= $arr['duration'] ?> days</td>
+                    <td><?= $status ?></td>
+                    <?php if (!$isSuperAdmin): ?>
                         <td>
                             <a href="edit.php?id=<?= $arr['id'] ?>">Edit</a>
-
                         </td>
-                    </tr>
+                    <?php endif; ?>
+                </tr>
                 <?php
-                    $i++;
-                    }
-                ?>
-            </tbody>
-        </table>
-
-    </div>
+                $i++;
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

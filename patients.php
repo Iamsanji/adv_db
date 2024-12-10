@@ -2,11 +2,11 @@
     session_start();
 
     // Check if the user is logged in and has admin privileges
-    if(isset($_SESSION['account'])){
-        if(!$_SESSION['account']['is_admin']){
+    if (isset($_SESSION['account'])) {
+        if (!$_SESSION['account']['is_admin']) {
             header('location: signin.php');
         }
-    }else{
+    } else {
         header('location: signin.php');
     }
 
@@ -15,8 +15,11 @@
     $db = new Database();
 
     // Query to fetch all patients (role = 'customer')
-    $query = $db->connect()->query("SELECT id, first_name, last_name, username, contact_number FROM account WHERE role = 'customer'");
+    $query = $db->connect()->query("SELECT id, first_name, last_name, address, pwd_id, sex, age, contact_number, username FROM account WHERE role = 'customer'");
     $patients = $query->fetchAll();  // Fetch all the patients as an array
+
+    // Check if the logged-in user is a superadmin
+    $isSuperAdmin = $_SESSION['account']['role'] == 'superadmin';
 ?>
 
 <!DOCTYPE html>
@@ -24,6 +27,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=visibility" />
     <title>Patients List</title>
     <style>
         /* General styles */
@@ -93,8 +97,13 @@
             background-color: #f2f2f2;
         }
 
-        .sidebar h2{
+        .sidebar h2 {
             padding: 1rem;
+            text-align: center;
+        }
+
+        .td {
+            text-align: center;
         }
     </style>
 </head>
@@ -122,8 +131,14 @@
                     <th>ID</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Pwd/Senior ID</th>
+                    <th>Sex</th>
+                    <th>Age</th>
                     <th>Contact Number</th>
+                    <?php if ($isSuperAdmin): ?>
+                        <th>Email</th>
+                    <?php endif; ?>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -136,13 +151,24 @@
                         <td><?= $patient['id'] ?></td>
                         <td><?= $patient['first_name'] ?></td>
                         <td><?= $patient['last_name'] ?></td>
-                        <td><?= $patient['username'] ?></td>
+                        <td><?= $patient['address'] ?></td>
+                        <td><?= $patient['pwd_id'] ?></td>
+                        <td><?= $patient['sex'] ?></td>
+                        <td><?= $patient['age'] ?> years old</td>
                         <td><?= $patient['contact_number'] ?></td>
-                        <td>
-                            <!-- You can add action buttons (edit, view) here -->
-                            <a href="edit_patient.php?id=<?= $patient['id'] ?>">Edit</a>
-                            <a href="view_patient.php?id=<?= $patient['id'] ?>">View</a>
+                        <?php if ($isSuperAdmin): ?>
+                            <td><?= $patient['username'] ?></td>  <!-- Email (username) for Superadmin -->
+                        <?php endif; ?>
+                        
+                        <td class = "td">   
+                            <a href="view_patient.php?id=<?= $patient['id'] ?>" ><img src = "view.png" style = "height: 24px;"></a>
+                            <?php if ($_SESSION['account']['role'] == 'superadmin' || $_SESSION['account']['is_admin']): ?>
+                                <!-- Admin and Superadmin have the Delete option -->
+                                <a href="delete_patient.php?id=<?= $patient['id'] ?>" onclick="return confirm('Are you sure you want to delete this patient?');">
+                                    <img src = "delete.png" style = "height: 24px;"></a>
+                            <?php endif; ?>
                         </td>
+                        
                     </tr>
                 <?php
                     }

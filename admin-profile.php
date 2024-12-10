@@ -61,7 +61,7 @@
 
         .sidebar h2 {
             padding: 1rem;
-            
+            text-align: center;
         }
 
         /* Sidebar links */
@@ -137,8 +137,7 @@
 
     <!-- Main content -->
     <div class="main-content">
-        <h1>Admin Profile</h1>
-
+        <h1><?= $_SESSION['account']['first_name'] ?> Profile</h1>
         <!-- Profile card -->
         <div class="profile-card">
             <h3>Profile Information</h3>

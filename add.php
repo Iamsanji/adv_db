@@ -31,6 +31,8 @@
         $duration = clean_input($_POST['duration']);
         $date = clean_input($_POST['date']);
         $patient_id = clean_input($_POST['patient_id']);  
+
+        //$types = clean_input($_POST['types']);
     
         // Error handling
         if (empty($product_code)) {
@@ -78,6 +80,8 @@
             $prescribeObj->price = $price;
             $prescribeObj->date = $date;
             $prescribeObj->duration = $duration;
+            //$prescribeObj->types = $types;
+
     
             $prescribeObj->user_id = $patient_id;  
     
@@ -207,8 +211,9 @@
             <label for="dosage">Dosage
                 <select name="dosage" id="dosage">
                     <option value="">--Select--</option>
-                    <option value="Grams(g)" <?= (isset($dosage) && $dosage == 'Grams(g)') ? 'selected=true' : '' ?>>Grams(g)</option>
-                    <option value="Milligrams(mg)" <?= (isset($dosage) && $dosage == 'Milligrams(mg)') ? 'selected=true' : '' ?>>Milligrams(mg)</option>
+                    <option value="1 g" <?= (isset($dosage) && $dosage == '1 g') ? 'selected=true' : '' ?>>1 g</option>
+                    <option value="250 mg" <?= (isset($dosage) && $dosage == '250 mg') ? 'selected=true' : '' ?>>250 mg</option>
+                    <option value="500 mg" <?= (isset($dosage) && $dosage == '500 mg') ? 'selected=true' : '' ?>>500 mg</option>
                 </select>
                 <?php if (!empty($dosageErr)): ?>
                     <span class="error"><?= $dosageErr ?></span>
@@ -222,6 +227,7 @@
             </label>
         </div>
 
+       
         <div class="form-row">
             <label for="price">Price
                 <input type="number" name="price" value="<?= $price ?>">
