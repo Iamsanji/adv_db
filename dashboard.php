@@ -21,6 +21,10 @@
     $sql->bindParam(':admin_id', $admin_id);
     $patients = $sql->fetch();
 
+    $sql = $db->connect()->query("SELECT COUNT(*) as total_admins FROM account WHERE role = 'admin'");
+    $sql->bindParam(':admin_id', $admin_id);
+    $total_admins = $sql->fetch();
+
     $sql = $db->connect()->query("SELECT COUNT(*) as total_prescriptions FROM prescribe");
     $sql->bindParam(':admin_id', $admin_id);
     $prescriptions = $sql->fetch();
@@ -28,6 +32,11 @@
     $sql = $db->connect()->query("SELECT COUNT(*) as not_done FROM prescribe WHERE status = 'Not Done'");
     $sql->bindParam(':admin_id', $admin_id);
     $notdone = $sql->fetch();
+
+    //new dec11
+    $sql = $db->connect()->query("SELECT COUNT(*) as done FROM prescribe WHERE status = 'Done'");
+    $sql->bindParam(':admin_id', $admin_id);
+    $done = $sql->fetch();
 
     $sql = $db->connect()->query("SELECT COUNT(DISTINCT user_id) as active_users FROM prescribe");
     $sql->bindParam(':admin_id', $admin_id);
@@ -102,10 +111,10 @@
 
         /* Dashboard box */
         .dashboard-box {
-            background-color: #ecf0f1;
+            background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.5);
         }
 
         .dashboard-box h3 {
@@ -117,6 +126,17 @@
             font-size: 20px;
             color: #16a085;
         }
+
+        .dashboard-box img {
+            height: 50px;
+        }
+
+        .dashboard-box {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        
 
         /* Responsive layout */
         @media (max-width: 768px) {
@@ -149,23 +169,67 @@
     <br>
 
         <div class="dashboard">
+
             <div class="dashboard-box">
-                <h3>Total Patients</h3>
-                <p><?= $patients['total_patients'] ?></p>
-            </div>
-            <div class="dashboard-box">
-                <h3>Total Prescriptions</h3>
-                <p><?= $prescriptions['total_prescriptions'] ?></p>
-            </div>
-            <div class="dashboard-box">
-                <h3>Active Users</h3>
-                <p><?= $active_users['active_users'] ?></p>
+                <div class="aa">
+                    <h3>Total Patients</h3>
+                    <p><?= $patients['total_patients'] ?></p>
+                </div>
+                <div class="img-box">
+                    <img src = "user.png">
+                </div>
             </div>
 
             <div class="dashboard-box">
-                <h3>Not Done</h3>
-                <p><?= $notdone['not_done'] ?></p>
+                <div class="aa">
+                    <h3>Total Prescriptions</h3>
+                    <p><?= $prescriptions['total_prescriptions'] ?></p>
+                </div>
+                <div class="img-box">
+                    <img src = "prescription.png">
+                </div>
             </div>
+
+            <div class="dashboard-box">
+                <div class="aa">
+                    <h3>Active Users</h3>
+                    <p><?= $active_users['active_users'] ?></p>
+                </div>
+                <div class="img-box">
+                    <img src = "check.png">
+                </div>
+            </div>
+
+            <div class="dashboard-box">
+                <div class="aa">
+                    <h3>Not Done</h3>
+                    <p><?= $notdone['not_done'] ?></p>
+                </div>
+                <div class="img-box">
+                    <img src = "cancel.png">
+                </div>
+            </div>
+
+            <div class="dashboard-box">
+                <div class="aa">
+                    <h3>Done</h3>
+                    <p><?= $done['done'] ?></p>
+                </div>
+                <div class="img-box">
+                    <img src = "done.png">
+                </div>
+            </div>
+
+            <div class="dashboard-box">
+                <div class="aa">
+                    <h3>Total Admin</h3>
+                    <p><?= $total_admins['total_admins'] ?></p>
+                </div>
+                <div class="img-box">
+                    <img src = "medical.png">
+                </div>
+            </div>
+
         </div>
     </div>
 
