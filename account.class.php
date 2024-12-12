@@ -148,18 +148,61 @@ class Account {
         $query->execute();
         return $query->fetchAll(PDO::FETCH_ASSOC);
     } 
-    
-    public function addDoctor($firstName, $lastName, $username, $password) {
+
+    public function addDoctor($first_name, $last_name, $username, $password) {
+        // Insert into the `account` table first
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO account (first_name, last_name, username, password, role) VALUES (:first_name, :last_name, :username, :password, 'admin')";
+        $sql = "INSERT INTO account (first_name, last_name, username, password, role, is_admin, is_staff) VALUES (:first_name, :last_name, :username, :password, 'admin', 1, 1)";
         $query = $this->db->connect()->prepare($sql);
-        $query->bindParam(':first_name', $firstName);
-        $query->bindParam(':last_name', $lastName);
+        $query->bindParam(':first_name', $first_name);
+        $query->bindParam(':last_name', $last_name);
         $query->bindParam(':username', $username);
         $query->bindParam(':password', $hashedPassword);
-        return $query->execute();
+
+        if ($query->execute()) {
+            // Get the last inserted ID for the new admin
+            $admin_id = $this->db->connect()->insert_id;
+
+            // Insert the same data into the `admins` table
+            $sql = "INSERT INTO admins (id, first_name, last_name, username, password) VALUES (:id, :first_name, :last_name, :username, :password)";
+            $query1 = $this->db->connect()->prepare($sql);
+            $query1->bindParam(':id', $id);
+            $query1->bindParam(':first_name', $first_name);
+            $query1->bindParam(':last_name', $last_name);
+            $query1->bindParam(':username', $username);
+            $query1->bindParam(':password', $hashedPassword);
+
+            if ($query1->execute()) {
+                return true;  // Successfully added to both tables
+            } else {
+                // If the second insert fails, delete the entry from `account`
+                $stmt3 = $this->db->prepare("DELETE FROM account WHERE id = ?");
+                $stmt3->bind_param("i", $admin_id);
+                $stmt3->execute();
+                return false;
+            }
+        }
+        return false;
     }
-    
+
+    public function showById($userId) {
+
+        $sql = "SELECT * FROM account WHERE id = :user_id";
+        
+        $query = $this->db->connect()->prepare($sql);
+        
+        $query->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        
+        $query->execute();
+        
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            return $result;  
+        } else {
+            return null; 
+        }
+    }
     
 }
 

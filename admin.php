@@ -1,9 +1,8 @@
 <?php
-
 session_start();
 
 if (isset($_SESSION['account'])) {
-    // Redirect if not staff or superadmin
+    
     if (!$_SESSION['account']['is_staff']) {
         header('location: signin.php');
     }
@@ -12,24 +11,22 @@ if (isset($_SESSION['account'])) {
 }
 
 require_once 'prescribe.class.php';
+require_once 'account.class.php';
 
 $prescribeObj = new Prescribe();
 
 $currentDate = date('Y-m-d');
 
-// Check if user is superadmin
-$isSuperAdmin = $_SESSION['account']['role'] == 'superadmin'; // Adjust this condition based on your role implementation.
+$isSuperAdmin = $_SESSION['account']['role'] == 'superadmin';
 
 if ($isSuperAdmin) {
-    // Fetch all prescriptions
     $array = $prescribeObj->showAll();
 } else {
-    // Fetch only prescriptions added by the current admin
-    $adminId = $_SESSION['account']['id']; // Assuming admin's ID is stored in the session.
+
+    $adminId = $_SESSION['account']['id']; 
     $array = $prescribeObj->showByAdmin($adminId);
 }
 
-// Update prescription status logic
 foreach ($array as $arr) {
     $endDate = date('Y-m-d', strtotime($arr['date'] . ' + ' . $arr['duration'] . ' days'));
     if ($currentDate >= $endDate && $arr['status'] != 'Done') {
@@ -37,7 +34,6 @@ foreach ($array as $arr) {
     }
 }
 
-// Fetch prescriptions again to reflect status updates
 if ($isSuperAdmin) {
     $array = $prescribeObj->showAll();
 } else {
@@ -166,7 +162,7 @@ if ($isSuperAdmin) {
             justify-content: flex-end;
         }
 
-                /* Container for the search form */
+        /* Container for the search form */
         .search {
             display: flex;
             justify-content: flex-start; /* Align items to the left */
@@ -211,21 +207,20 @@ if ($isSuperAdmin) {
             transform: scale(0.98);
         }
 
-        /* Responsive design */
         @media screen and (max-width: 768px) {
             .search input[type="text"] {
-                width: 100%; /* Full width on smaller screens */
-                border-radius: 5px; /* Reset border radius */
-                margin-bottom: 10px; /* Add spacing between input and button */
+                width: 100%; 
+                border-radius: 5px; 
+                margin-bottom: 10px; 
             }
 
             .search button {
-                border-radius: 5px; /* Reset border radius */
-                width: 100%; /* Full width on smaller screens */
+                border-radius: 5px;
+                width: 100%; 
             }
 
             .search {
-                flex-direction: column; /* Stack input and button vertically */
+                flex-direction: column; 
                 align-items: stretch;
             }
         }
@@ -251,77 +246,75 @@ if ($isSuperAdmin) {
 <div class="main-content">
     <h1>Prescriptions</h1>
 
-    
-
     <div class="search">
 
         <?php if (!$isSuperAdmin): ?>
             <a href="add.php" class="add-button">Add</a>
         <?php endif; ?>
-        
+
         <form method="GET" action="">
         <input type="text" name="search" id="search" placeholder="Search by name" value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
         <button type="submit">Search</button>
     </form>
 
-    </div>    
+    </div>
 
     <table border="1">
-        <thead>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <?php if ($isSuperAdmin): ?>
+                <th>User ID</th>
+            <?php endif; ?>
+            <th>Product Code</th>
+            <th>Doctor Name</th>
+            <th>Patient Name</th>
+            <th>Product Name</th>
+            <th>Description</th>
+            <th>Dosage</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <?php if (!$isSuperAdmin): ?>
+                <th>Action</th>
+            <?php endif; ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $i = 1;
+        foreach ($array as $prescription) {
+            
+            $patientObj = new Account();
+            $patient = $patientObj->showById($prescription['user_id']);
+        ?>
             <tr>
-                <th>ID</th>
+                <td><?= $i++ ?></td>
                 <?php if ($isSuperAdmin): ?>
-                    <th>User ID</th>
+                    <td><?= $prescription['user_id'] ?></td>
                 <?php endif; ?>
-                <th>Product Code</th>
-                <th>Doctor Name</th>
-                <th>Product Name</th>
-                <th>Description</th>
-                <th>Dosage</th>
-                <th>Quantity</th>
-                <th>Date</th>
-                <th>Duration</th>
-                <th>Status</th>
+                <td><?= $prescription['product_code'] ?></td>
+                <td><?= $prescription['name'] ?></td>
+                <td><?= $patient['first_name'] . ' ' . $patient['last_name'] ?></td>
+                <td><?= $prescription['product_name'] ?></td>
+                <td><?= $prescription['description'] ?></td>
+                <td><?= $prescription['dosage'] ?></td>
+                <td><?= $prescription['quantity'] ?> pcs</td>
+                <td><?= $prescription['date'] ?></td>
+                <td><?= $prescription['duration'] ?> days</td>
+                <td><?= $prescription['status'] ?></td>
                 <?php if (!$isSuperAdmin): ?>
-                    <th>Action</th>
+                    <td>
+                        <a href="edit.php?id=<?= $prescription['id'] ?>">Edit</a>
+                    </td>     
                 <?php endif; ?>
             </tr>
-        </thead>
-        <tbody>
-            <?php
-            $i = 1;
-            foreach ($array as $arr) {
-                // Logic for updating status
-                $currentDate = date('Y-m-d');
-                $endDate = date('Y-m-d', strtotime($arr['date'] . ' + ' . $arr['duration'] . ' days'));
-                $status = ($currentDate >= $endDate) ? 'Done' : $arr['status'];
-                ?>
-                <tr>
-                    <td><?= $i ?></td>
-                    <?php if ($isSuperAdmin): ?>
-                        <td><?= $arr['user_id'] ?></td>
-                    <?php endif; ?>
-                    <td><?= $arr['product_code'] ?></td>
-                    <td><?= $arr['name'] ?></td>
-                    <td><?= $arr['product_name'] ?></td>
-                    <td><?= $arr['description'] ?></td>
-                    <td><?= $arr['dosage'] ?></td>
-                    <td><?= $arr['quantity'] ?> pcs</td>
-                    <td><?= $arr['date'] ?></td>
-                    <td><?= $arr['duration'] ?> days</td>
-                    <td><?= $status ?></td>
-                    <?php if (!$isSuperAdmin): ?>
-                        <td>
-                            <a href="edit.php?id=<?= $arr['id'] ?>">Edit</a>
-                        </td>
-                    <?php endif; ?>
-                </tr>
-                <?php
-                $i++;
-            }
-            ?>
-        </tbody>
+        <?php } ?>
+    </tbody>
     </table>
+
 </div>
+
 </body>
 </html>

@@ -1,7 +1,6 @@
 <?php
     session_start();
 
-    // Check if the user is logged in and has admin privileges
     if (isset($_SESSION['account'])) {
         if (!$_SESSION['account']['is_admin']) {
             header('location: signin.php');
@@ -10,15 +9,12 @@
         header('location: signin.php');
     }
 
-    // Include the database connection file
     require_once 'database.php';
     $db = new Database();
 
-    // Query to fetch all patients (role = 'customer')
     $query = $db->connect()->query("SELECT id, first_name, last_name, address, pwd_id, sex, age, contact_number, username FROM account WHERE role = 'customer'");
-    $patients = $query->fetchAll();  // Fetch all the patients as an array
+    $patients = $query->fetchAll(); 
 
-    // Check if the logged-in user is a superadmin
     $isSuperAdmin = $_SESSION['account']['role'] == 'superadmin';
 ?>
 
@@ -165,11 +161,11 @@
                         <?php endif; ?>
                         
                         <td class = "td">   
-                            <a href="view_patient.php?id=<?= $patient['id'] ?>" ><img src = "view.png" style = "height: 24px;"></a>
+                            <a href="view_patient.php?id=<?= $patient['id'] ?>" ><img src = "view.png" style = "height: 20px;"></a>
                             <?php if ($_SESSION['account']['role'] == 'superadmin' || $_SESSION['account']['is_admin']): ?>
                                 <!-- Admin and Superadmin have the Delete option -->
                                 <a href="delete_patient.php?id=<?= $patient['id'] ?>" onclick="return confirm('Are you sure you want to delete this patient?');">
-                                    <img src = "delete.png" style = "height: 24px;"></a>
+                                    <img src = "delete.png" style = "height: 20px;"></a>
                             <?php endif; ?>
                         </td>
                         

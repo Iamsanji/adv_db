@@ -12,7 +12,6 @@ if (!isset($_SESSION['account']) || !$_SESSION['account']['is_admin']) {
 
 $db = new Database();
 
-// Fetch patient details
 $user_id = $_GET['id'] ?? null;
 if (!$user_id) {
     echo "No patient found!";
@@ -24,9 +23,8 @@ $patient_query->bindParam(':id', $user_id, PDO::PARAM_INT);
 $patient_query->execute();
 $patient = $patient_query->fetch();
 
-// Fetch prescriptions for the selected patient
 $prescription_query = $db->connect()->prepare(
-    "SELECT product_code, product_name, description, dosage, quantity, price, date
+    "SELECT product_code, product_name, name, description, dosage, quantity, price, date
      FROM prescribe 
      WHERE user_id = :user_id"
 );
@@ -77,6 +75,7 @@ $array = $prescription_query->fetchAll();
             <tr>
                 <th>Product Code</th>
                 <th>Product Name</th>
+                <th>Doctor Name</th>
                 <th>Description</th>
                 <th>Dosage</th>
                 <th>Quantity</th>
@@ -93,6 +92,7 @@ $array = $prescription_query->fetchAll();
                     <tr>
                         <td><?= $arr['product_code'] ?></td>
                         <td><?= $arr['product_name'] ?></td>
+                        <td><?= $arr['name'] ?></td>
                         <td><?= $arr['description'] ?></td>
                         <td><?= $arr['dosage'] ?></td>
                         <td><?= $arr['quantity'] ?></td>

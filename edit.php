@@ -1,128 +1,89 @@
 <?php
+session_start();
 
-    
-    session_start();
+if (!isset($_SESSION['account']) || !isset($_SESSION['account']['id'])) {
+    header('Location: signin.php');
+    exit();
+}
+$user_id = $_SESSION['account']['id'];
 
-    if (!isset($_SESSION['account']) || !isset($_SESSION['account']['id'])) {
-        header('Location: signin.php');
+require_once('header.php');
+require_once('functions.php');
+require_once('prescribe.class.php');
 
-        exit();
-    }
-    $user_id = $_SESSION['account']['id']; 
+$product_code = $name = $product_name = $description = $dosage = $duration = $quantity = $price = $date = '';
+$product_codeErr = $nameErr = $product_nameErr = $descriptionErr = $dosageErr = $quantityErr = $priceErr = $dateErr = '';
 
-    require_once('header.php');
-    require_once('functions.php');
-    require_once('prescribe.class.php');
+$prescribeObj = new Prescribe();
 
-    $product_code = $name = $product_name = $description = $dosage = $duration = $quantity = $price = $date = '';
-    $product_codeErr = $nameErr = $product_nameErr = $descriptionErr = $dosageErr = $quantityErr = $priceErr = $dateErr = '';
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    if (isset($_GET['id'])) {
+        $id = $_GET['id'];
+        $record = $prescribeObj->fetchRecord($id); // This should fetch the correct record
 
-    $prescribeObj = new Prescribe ();
-
-    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-
-        if (isset($_GET['id'])) {
-            $id = $_GET['id'];
-            $record = $prescribeObj->fetchRecord($id); 
-            if (!empty($record)) {
-
-                $product_code = $record['product_code'];
-                $name = $record['name'];
-                $product_name = $record['product_name'];
-                $description = $record['description'];
-                $dosage = $record['dosage'];
-                $quantity = $record['quantity'];
-                $price = $record['price'];
-                $duration = $record['duration'];
-                $date = $record['date'];
-
-
-
-            } else {
-                echo 'No prescription found';
-                exit;
-            }
+        if (!empty($record)) {
+            $product_code = $record['product_code'];
+            $name = $record['name'];
+            $product_name = $record['product_name'];
+            $description = $record['description'];
+            $dosage = $record['dosage'];
+            $quantity = $record['quantity'];
+            $price = $record['price'];
+            $duration = $record['duration'];
+            $date = $record['date'];
         } else {
-            echo 'No prescription found';
+            echo 'No prescription found or you do not have permission to edit this prescription.';
             exit;
         }
-    } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $id = clean_input($_GET['id']); 
-        $product_code = clean_input($_POST['product_code']);
-        $name = clean_input($_POST['name']);
-        $product_name = clean_input($_POST['product_name']);
-        $description = clean_input($_POST['description']);
-        $dosage = clean_input($_POST['dosage']);
-        $quantity = clean_input($_POST['quantity']);
-        $price = clean_input($_POST['price']);
-        $date = clean_input($_POST['date']);
-        $patient_id = clean_input($_POST['patient_id']);
-
-        //$types = clean_input($_POST['types']);
-
-
-       
-        $duration = clean_input($_POST['duration']);
-
-        if(empty($product_code)){
-            $product_codeErr = 'Product Code is required';
-        } 
-
-        if(empty($name)){
-            $nameErr = 'Name is required';
-        }
-        
-        if(empty($product_name)){
-            $product_nameErr = 'Product Name is required';
-        }
-
-        if(empty($description)){
-            $descriptionErr = 'Description is required';
-        }
-
-        if(empty($dosage)){
-            $dosageErr = 'Dosage is required';
-        }
-
-        if(empty($quantity)){
-            $quantityErr = 'Quantity is required';
-        }
-
-        if(empty($price)){
-            $priceErr = 'Price is required';
-        }
-
-        if(empty($date)){
-            $dateErr = 'Date is required';
-        }
-
-            if (empty($product_codeErr) && empty($nameErr) && empty($product_nameErr) && empty($descriptionErr) && empty($dosageErr) && empty($quantityErr) && empty($priceErr) && empty($dateErr)) {
-            $prescribeObj->id = $id;
-            $prescribeObj->product_code = $product_code;
-            $prescribeObj->name = $name;
-            $prescribeObj->product_name = $product_name;
-            $prescribeObj->description = $description;
-            $prescribeObj->dosage = $dosage;
-            $prescribeObj->quantity = $quantity;
-            $prescribeObj->price = $price;
-            $prescribeObj->date = $date;
-
-            $prescribeObj->duration = $duration;
-           // $prescribeObj->types = $types;
-
-            $prescribeObj->user_id = $patient_id; 
-            $prescribeObj->admin_id = $user_id; 
-
-            if ($prescribeObj->edit()) {
-                header('Location: admin.php');
-                exit();
-            } else {
-                echo 'Something went wrong when updating the prescription.';
-            }
-        }
-
+    } else {
+        echo 'No prescription found';
+        exit;
     }
+} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = clean_input($_POST['id']);
+    $product_code = clean_input($_POST['product_code']);
+    $name = clean_input($_POST['name']);
+    $product_name = clean_input($_POST['product_name']);
+    $description = clean_input($_POST['description']);
+    $dosage = clean_input($_POST['dosage']);
+    $quantity = clean_input($_POST['quantity']);
+    $price = clean_input($_POST['price']);
+    $date = clean_input($_POST['date']);
+    $patient_id = clean_input($_POST['patient_id']);
+    $duration = clean_input($_POST['duration']);
 
+    // Error checks
+    if (empty($product_code)) { $product_codeErr = 'Product Code is required'; }
+    if (empty($name)) { $nameErr = 'Name is required'; }
+    if (empty($product_name)) { $product_nameErr = 'Product Name is required'; }
+    if (empty($description)) { $descriptionErr = 'Description is required'; }
+    if (empty($dosage)) { $dosageErr = 'Dosage is required'; }
+    if (empty($quantity)) { $quantityErr = 'Quantity is required'; }
+    if (empty($price)) { $priceErr = 'Price is required'; }
+    if (empty($date)) { $dateErr = 'Date is required'; }
+
+    if (empty($product_codeErr) && empty($nameErr) && empty($product_nameErr) && empty($descriptionErr) && empty($dosageErr) && empty($quantityErr) && empty($priceErr) && empty($dateErr)) {
+        $prescribeObj->id = $id;
+        $prescribeObj->product_code = $product_code;
+        $prescribeObj->name = $name;
+        $prescribeObj->product_name = $product_name;
+        $prescribeObj->description = $description;
+        $prescribeObj->dosage = $dosage;
+        $prescribeObj->quantity = $quantity;
+        $prescribeObj->price = $price;
+        $prescribeObj->date = $date;
+        $prescribeObj->duration = $duration;
+        $prescribeObj->user_id = $patient_id;
+        $prescribeObj->admin_id = $_SESSION['account']['id'];
+
+        if ($prescribeObj->edit()) {
+            header('Location: admin.php');
+            exit();
+        } else {
+            echo 'Something went wrong when updating the prescription.';
+        }
+    }
+}
 ?>
 
 

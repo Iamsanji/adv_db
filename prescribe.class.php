@@ -79,17 +79,29 @@ class Prescribe {
     
     function edit() {
         session_start();
-        $user_id = $_SESSION['account']['id'];
+        $user_id = $_SESSION['account']['id']; 
     
         $id = clean_input($_GET['id']);
-        
         if (empty($id)) {
             echo "Invalid prescription ID.";
             return false;
         }
     
+        $sql = "SELECT * FROM prescribe WHERE id = :id AND (user_id = :user_id OR :role = 'admin')";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->bindParam(':user_id', $user_id);
+        $query->bindParam(':role', $_SESSION['account']['role']);  // Check if the user is admin
+        $query->execute();
+        
+        $record = $query->fetch(PDO::FETCH_ASSOC);
+    
+        if (!$record) {
+            echo "You do not have permission to edit this prescription.";
+            return false;
+        }
+    
         $currentDate = date('Y-m-d');
-
         $endDate = date('Y-m-d', strtotime($this->date . ' + ' . $this->duration . ' days'));
     
         $status = ($currentDate > $endDate) ? 'done' : 'not done';
@@ -107,10 +119,8 @@ class Prescribe {
                     status = :status 
                 WHERE id = :id";
     
-    
         try {
             $query = $this->db->connect()->prepare($sql);
-    
             $query->bindParam(':product_code', $this->product_code);
             $query->bindParam(':name', $this->name);
             $query->bindParam(':product_name', $this->product_name);
@@ -120,15 +130,8 @@ class Prescribe {
             $query->bindParam(':price', $this->price);
             $query->bindParam(':date', $this->date);
             $query->bindParam(':duration', $this->duration);
-            $query->bindParam(':status', $status);  // Use the calculated status
-
-           // $query->bindParam(':types', $types);
-    
+            $query->bindParam(':status', $status);
             $query->bindParam(':id', $id);
-    
-            if ($_SESSION['account']['role'] != 'admin') {
-                $query->bindParam(':user_id', $user_id);
-            }
     
             if ($query->execute()) {
                 return true;
@@ -143,8 +146,7 @@ class Prescribe {
         }
     }
     
-
-    function fetchRecord($recordID) {
+    /*function fetchRecord($recordID) {
         $user_id = $_SESSION['account']['id']; 
         $role = $_SESSION['account']['role'];
     
@@ -169,7 +171,17 @@ class Prescribe {
         }
     
         return $data;
+    }*/
+
+    //dec12
+    function fetchRecord($id) {
+        $sql = "SELECT * FROM prescribe WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':id', $id, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
     }
+    
     
 
     function delete($recordID) {
