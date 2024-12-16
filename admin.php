@@ -306,7 +306,8 @@ if ($isSuperAdmin) {
                 <td><?= $prescription['status'] ?></td>
                 <?php if (!$isSuperAdmin): ?>
                     <td>
-                        <a href="edit.php?id=<?= $prescription['id'] ?>">Edit</a>
+                        <a href="edit.php?id=<?= $prescription['id'] ?>"><img src = "edit.png" style = "height: 20px;"></a>
+                        <a href="delete_prescribe.php?id=<?= $prescription['id']; ?>" onclick="return confirm('Are you sure you want to delete this prescription?');"><img src = "delete.png" style = "height: 20px;"></a>
                     </td>     
                 <?php endif; ?>
             </tr>
