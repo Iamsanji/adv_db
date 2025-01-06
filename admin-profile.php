@@ -1,30 +1,64 @@
 <?php
+session_start();
 
-    session_start();
-
-    if(isset($_SESSION['account'])){
-        if(!$_SESSION['account']['is_staff']){
-            header('location: signin.php');
-        }
-    }else{
+if(isset($_SESSION['account'])){
+    if(!$_SESSION['account']['is_staff']){
         header('location: signin.php');
     }
+}else{
+    header('location: signin.php');
+}
 
-    require_once 'database.php';
-    $db = new Database();
+require_once 'database.php';
+$db = new Database();
 
-    $admin_id = $_SESSION['account']['id'];
+$admin_id = $_SESSION['account']['id'];
 
-    $stmt = $db->connect()->prepare("SELECT id, first_name, last_name, username, contact_number, address FROM account WHERE id = :id");
-    $stmt->execute(['id' => $admin_id]);
+$stmt = $db->connect()->prepare("SELECT id, first_name, last_name, username, contact_number, address FROM account WHERE id = :id");
+$stmt->execute(['id' => $admin_id]);
 
-    $admin = $stmt->fetch();
+$admin = $stmt->fetch();
 
-    if (!$admin) {
-        header('location: dashboard.php');
-        exit();
-    }    
+if (!$admin) {
+    header('location: dashboard.php');
+    exit();
+}
 
+// Handle the form submission to update profile
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    $contact_number = $_POST['contact_number'];
+    $address = $_POST['address'];
+
+    try {
+        // Prepare the update query
+        $updateStmt = $db->connect()->prepare("UPDATE account SET first_name = :first_name, last_name = :last_name, username = :email, contact_number = :contact_number, address = :address WHERE id = :id");
+        
+        // Execute the query
+        $updateStmt->execute([
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'email' => $email,
+            'contact_number' => $contact_number,
+            'address' => $address,
+            'id' => $admin_id
+        ]);
+
+        // Check if the update was successful
+        if ($updateStmt->rowCount() > 0) {
+            // Redirect to the profile page after successful update
+            header('Location: admin-profile.php');
+            exit();
+        } else {
+            // If no rows were updated, display an error message
+            echo "<p style='color: red;'>Error: No changes were made. Please check the form fields.</p>";
+        }
+    } catch (PDOException $e) {
+        // Catch any errors and display the error message
+        echo "<p style='color: red;'>Error: " . $e->getMessage() . "</p>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -84,36 +118,48 @@
             flex: 1;
         }
 
-        /* Dashboard layout */
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        /* Dashboard box */
-        .dashboard-box {
+        /* Profile card */
+        .profile-card {
             background-color: #ecf0f1;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .dashboard-box h3 {
+        .profile-card h3 {
             margin-top: 0;
             color: #2c3e50;
         }
 
-        .dashboard-box p {
-            font-size: 20px;
+        .profile-card p {
+            font-size: 18px;
             color: #16a085;
         }
 
-        /* Responsive layout */
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
+        /* Edit form */
+        .edit-form {
+            margin-top: 20px;
+        }
+
+        .edit-form input, .edit-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .edit-form button {
+            background-color: #1abc9c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .edit-form button:hover {
+            background-color: #16a085;
         }
     </style>
 </head>
@@ -133,7 +179,6 @@
     <a href="logout.php">Logout</a>
     </div>
 
-
     <!-- Main content -->
     <div class="main-content">
         <h1><?= $_SESSION['account']['first_name'] ?> Profile</h1>
@@ -142,9 +187,21 @@
             <h3>Profile Information</h3>
             <p><strong>First Name:</strong> <?= htmlspecialchars($admin['first_name']) ?></p>
             <p><strong>Last Name:</strong> <?= htmlspecialchars($admin['last_name']) ?></p>
-            <p><strong>Email:</strong> <?= htmlspecialchars($admin['username']) ?></p>
+            <p><strong>Username:</strong> <?= htmlspecialchars($admin['username']) ?></p>
             <p><strong>Contact Number:</strong> <?= htmlspecialchars($admin['contact_number']) ?></p>
             <p><strong>Address:</strong> <?= htmlspecialchars($admin['address']) ?></p>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <div class="edit-form">
+            <h3>Edit Profile</h3>
+            <form method="POST" action="admin-profile.php">
+                <input type="text" name="first_name" placeholder="First Name" value="<?= htmlspecialchars($admin['first_name']) ?>" required>
+                <input type="text" name="last_name" placeholder="Last Name" value="<?= htmlspecialchars($admin['last_name']) ?>" required>
+                <input type="text" name="contact_number" placeholder="Contact Number" value="<?= htmlspecialchars($admin['contact_number']) ?>" required>
+                <textarea name="address" placeholder="Address" rows="4" required><?= htmlspecialchars($admin['address']) ?></textarea>
+                <button type="submit">Save Changes</button>
+            </form>
         </div>
     </div>
 

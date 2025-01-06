@@ -4,14 +4,11 @@ require_once 'account.class.php';
 
 session_start();
 
-
 if (!isset($_SESSION['account']) || !isset($_SESSION['account']['id'])) {
     echo "User not found or invalid data.";
     header('Location: signin.php');
     exit();
 }
-
-
 
 $user_id = $_SESSION['account']['id']; 
 $accountObj = new Account();
@@ -19,21 +16,10 @@ $user_data = $accountObj->fetchById($user_id);
 
 $profilePicture = $accountObj->getProfilePicture($user_id);
 
-
-
-/*if ($accountObj->update($user_id)) {
-    echo "Profile updated successfully.";
-    // Redirect to the same page to refresh the image
-    header("Location: profile.php");
-    exit();  // Make sure to call exit() to stop the script from continuing
-}*/
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile']) ) {
 
-     // Existing update logic
      $first_name = clean_input($_POST['first_name']);
      $last_name = clean_input($_POST['last_name']);
-     // Other fields...
 
      if (isset($_FILES['profilePicture']) && $_FILES['profilePicture']['error'] == UPLOAD_ERR_OK) {
         $uploadDir = 'uploads/';
@@ -53,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile']) ) {
         }
     }
 
-
     $first_name = clean_input($_POST['first_name']);
     $last_name = clean_input($_POST['last_name']);
     $sex = clean_input($_POST['sex']);
@@ -71,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile']) ) {
         
         $password = $user_data['password'];
     }
-
     
     $accountObj->first_name = $first_name;
     $accountObj->last_name = $last_name;
@@ -86,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile']) ) {
     
     if ($accountObj->update($user_id)) {
         
-        // Optionally redirect after update
          header('Location: profile.php');
          echo "<script>alert('Your profile has been updated successfully.');</script>";
     } else {
@@ -95,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile']) ) {
 }
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -126,142 +108,173 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile']) ) {
             transform: scale(1.1); /* Slight zoom effect on hover */
         }
 
-        /* General profile container */
-.profile-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-}
+        .profile-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
 
-/* Profile picture section */
-.profile-left {
-    width: 30%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        /* Profile picture section */
+        .profile-left {
+            width: 30%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.profile-picture-container {
-    width: 100%;
-    text-align: center;
-}
+        .profile-picture-container {
+            width: 100%;
+            text-align: center;
+        }
 
-.profile-picture {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #2c3e50;
-}
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #2c3e50;
+        }
 
-/* Profile form section */
-.profile-right {
-    width: 65%;
-}
+        /* Profile form section */
+        .profile-right {
+            width: 65%;
+        }
 
-h2 {
-    text-align: left;
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-}
+        h2 {
+            text-align: left;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
 
-/* Form styling */
-.profile-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 15px;
-}
+        /* Form styling */
+        .profile-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 15px;
+        }
 
-/* Form group */
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
+        /* Form group */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
 
-.form-group label {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 5px;
-}
+        .form-group label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
 
-.form-group input,
-.form-group select {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    outline: none;
-}
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
 
-.form-group input:focus,
-.form-group select:focus {
-    border-color: #3498db;
-}
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #3498db;
+        }
 
-/* Adjust form layout for smaller screens */
-@media (max-width: 768px) {
-    .profile-container {
-        flex-direction: column;
-        width: 100%;
-    }
+        /* Adjust form layout for smaller screens */
+        @media (max-width: 768px) {
+            .profile-container {
+                flex-direction: column;
+                width: 100%;
+            }
 
-    .profile-left, .profile-right {
-        width: 100%;
-    }
+            .profile-left, .profile-right {
+                width: 100%;
+            }
 
-    .profile-form {
-        grid-template-columns: 1fr;
-    }
-}
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+        }
 
-/* Submit button */
-.form-actions {
-    grid-column: span 2;
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
+        /* Submit button */
+        .form-actions {
+            grid-column: span 2;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
 
-.form-actions input[type="submit"] {
-    padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    background-color: #3498db;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+        .form-actions input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-.form-actions input[type="submit"]:hover {
-    background-color: #2980b9;
-}
+        .form-actions input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
 
-/* Logout link styling */
-.logout-link {
-    text-align: center;
-    margin-top: 20px;
-}
+        /* Logout link styling */
+        .logout-link {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-.logout-link a {
-    font-size: 16px;
-    color: #e74c3c;
-    text-decoration: none;
-    font-weight: bold;
-}
+        .logout-link a {
+            font-size: 16px;
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-.logout-link a:hover {
-    text-decoration: underline;
-}
+        .logout-link a:hover {
+            text-decoration: underline;
+        }
 
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: transparent;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            z-index: 1000;
+            box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
 
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .close-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 12px;
+            color: red;
+            cursor: pointer;
+        }
 
 
     </style>
@@ -270,10 +283,10 @@ h2 {
 <body>
 
     <?php
-    // Display success message if the profile was updated
+
     if (isset($_SESSION['profile_updated']) && $_SESSION['profile_updated'] === true) {
         echo "<script>alert('Your profile has been updated successfully.');</script>";
-        unset($_SESSION['profile_updated']); // Remove the flag
+        unset($_SESSION['profile_updated']);
     }
     ?>
 
@@ -301,92 +314,142 @@ h2 {
 
 
     <main>
-    <div class="profile-container">
+        <div class="profile-container">
 
-        <div class="profile-left">
-            <div class="profile-picture-container">
-                <img src="<?= htmlspecialchars($profilePicture) ?>" alt="Profile Picture" class="profile-picture">
+            <div class="profile-left">
+                <div class="profile-picture-container">
+                    <img src="<?= htmlspecialchars($profilePicture) ?>" alt="Profile Picture" class="profile-picture">
+                </div>
             </div>
-        </div>
 
-        
+            
 
-        <div class="profile-right">
-            <h2>Profile</h2>
+            <div class="profile-right">
+                <h2>Profile</h2>
 
-            <form action="profile.php" method="POST" enctype="multipart/form-data" class="profile-form">
+                <form action="profile.php" method="POST" enctype="multipart/form-data" class="profile-form">
 
-                <div class="form-group">
-                    <label for="profilePicture">Profile Picture:</label>
-                    <input type="file" name="profilePicture" id="profilePicture" accept="image/*">
-                </div>
+                    <div class="form-group">
+                        <label for="profilePicture">Profile Picture:</label>
+                        <input type="file" name="profilePicture" id="profilePicture" accept="image/*">
+                    </div>
 
-                <div class="form-group">
-                    <label for="first_name">First Name:</label>
-                    <input type="text" name="first_name" id="first_name" value="<?= htmlspecialchars($user_data['first_name']) ?>">
-                </div>
+                    <div class="form-group">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" name="first_name" id="first_name" value="<?= htmlspecialchars($user_data['first_name']) ?>">
+                    </div>
 
-                <div class="form-group">
-                    <label for="last_name">Last Name:</label>
-                    <input type="text" name="last_name" id="last_name" value="<?= htmlspecialchars($user_data['last_name']) ?>">
-                </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" name="last_name" id="last_name" value="<?= htmlspecialchars($user_data['last_name']) ?>">
+                    </div>
 
-                <div class="form-group">
-                    <label for="sex">Sex:</label>
-                    <select name="sex" id="sex">
-                        <option value="Male" <?= $user_data['sex'] == 'Male' ? 'selected' : '' ?>>Male</option>
-                        <option value="Female" <?= $user_data['sex'] == 'Female' ? 'selected' : '' ?>>Female</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="sex">Sex:</label>
+                        <select name="sex" id="sex">
+                            <option value="Male" <?= $user_data['sex'] == 'Male' ? 'selected' : '' ?>>Male</option>
+                            <option value="Female" <?= $user_data['sex'] == 'Female' ? 'selected' : '' ?>>Female</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="age">Age:</label>
-                    <input type="number" name="age" id="age" value="<?= htmlspecialchars($user_data['age']) ?>">
-                </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" name="age" id="age" value="<?= htmlspecialchars($user_data['age']) ?>">
+                    </div>
 
-                <div class="form-group">
-                    <label for="contact_number">Contact Number:</label>
-                    <input type="tel" name="contact_number" id="contact_number" value="<?= htmlspecialchars($user_data['contact_number']) ?>">
-                </div>
+                    <div class="form-group">
+                        <label for="contact_number">Contact Number:</label>
+                        <input type="tel" name="contact_number" id="contact_number" value="<?= htmlspecialchars($user_data['contact_number']) ?>">
+                    </div>
 
-                <div class="form-group">
-                    <label for="pwd_id">PWD ID:</label>
-                    <input type="text" name="pwd_id" id="pwd_id" value="<?= htmlspecialchars($user_data['pwd_id']) ?>">
-                </div>
+                    <div class="form-group">
+                        <label for="pwd_id">PWD ID:</label>
+                        <input type="text" name="pwd_id" id="pwd_id" value="<?= htmlspecialchars($user_data['pwd_id']) ?>">
+                    </div>
 
-                <div class="form-group">
-                    <label for="address">Address:</label>
-                    <input type="text" name="address" id="address" value="<?= htmlspecialchars($user_data['address']) ?>">
-                </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input type="text" name="address" id="address" value="<?= htmlspecialchars($user_data['address']) ?>">
+                    </div>
 
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" name="username" id="username" value="<?= htmlspecialchars($user_data['username']) ?>" disabled>
-                </div>
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" name="username" id="username" value="<?= htmlspecialchars($user_data['username']) ?>" disabled>
+                    </div>
 
-                <div class="form-group">
-                    <label for="password">New Password (leave blank to keep current):</label>
-                    <input type="password" name="password" id="password" value=""> 
-                </div>
+                    <div class="form-group">
+                        <label for="password">New Password (leave blank to keep current):</label>
+                        <input type="password" name="password" id="password" value=""> 
+                    </div>
 
-                <div class="form-actions">
-                    <input type="submit" value="Update Profile" name="update_profile">
+                    <div class="form-actions">
+                        <input type="submit" value="Update Profile" name="update_profile">
+                        <button type="button" onclick="showID()">ID</button>
+                        
+                    </div>
                     
-                </div>
-                
+                </form>
 
-            </form>
+            </div>
 
         </div>
 
+        <div class="overlay" id="overlay"></div>
+
+        <div class="popup" id="popup">
+        <div id="popup-content" class="receipt">
+            <!-- Content will be dynamically added here -->
+        </div>
+        <br>
+        <button class="close-btn" onclick="closePopup()">❌</button>
+        </div>
         
+    </main>
 
-    </div>
+    <script>
+    function showID() {
+        const userData = {
+            firstName: "<?= htmlspecialchars($user_data['first_name']) ?>",
+            lastName: "<?= htmlspecialchars($user_data['last_name']) ?>",
+            sex: "<?= htmlspecialchars($user_data['sex']) ?>",
+            age: "<?= htmlspecialchars($user_data['age']) ?>",
+            contactNumber: "<?= htmlspecialchars($user_data['contact_number']) ?>",
+            pwdId: "<?= htmlspecialchars($user_data['pwd_id']) ?>",
+            address: "<?= htmlspecialchars($user_data['address']) ?>",
+            profilePicture: "<?= htmlspecialchars($profilePicture) ?>"
+        };
 
-    
-</main>
+        const popupContent = document.getElementById('popup-content');
+        popupContent.innerHTML = `
+            <div style="text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 10px; width: 300px; margin: auto; background-color: #fff;">
+            <h5>REPUBLIC OF THE PHILIPPINES</h5>
+            <h5>Philippine Identification Card</h5>
+            <br>
+                <div style="display:flex; justify-content: space-between;">        
+                    <img src="${userData.profilePicture}" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+                    <div style = "margin-right: 3rem; padding: 1rem; text-align: left;">
+                        <h5>Name: ${userData.firstName} ${userData.lastName}</h5>
+                        <h5><strong>PWD ID:</strong> ${userData.pwdId}</h5>
+                        <h5><strong>Sex:</strong> ${userData.sex}</h5>
+                        <h5><strong>Age:</strong> ${userData.age}</h5>
+                    </div>
+                </div>    
+                    
+                    <h5>Contact #: <u>${userData.contactNumber}</u></h5>
+                    <h5>Address: <u>${userData.address}</u></h5>
+            </div>
+        `;
+        document.getElementById('popup').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
 
+        
+    }
 
+    function closePopup() {
+                    document.getElementById('popup').style.display = 'none';
+                    document.getElementById('overlay').style.display = 'none';
+                }
 
+    </script>
 </body>
 </html>

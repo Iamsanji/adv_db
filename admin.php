@@ -295,7 +295,7 @@ if ($isSuperAdmin) {
                     <td><?= $prescription['user_id'] ?></td>
                 <?php endif; ?>
                 <td><?= $prescription['product_code'] ?></td>
-                <td><?= $prescription['name'] ?></td>
+                <td>Dr. <?= $prescription['name'] ?></td>
                 <td><?= $patient['first_name'] . ' ' . $patient['last_name'] ?></td>
                 <td><?= $prescription['product_name'] ?></td>
                 <td><?= $prescription['description'] ?></td>

@@ -14,7 +14,7 @@
     require_once('functions.php');
     require_once('prescribe.class.php');
 
-    $product_code = $name = $product_name = $description = $duration = $dosage = $quantity = $price = $date = '';
+    $product_code = $name = $product_name = $description = $duration = $dosage = $quantity = $price = $discount = $date = '';
     $product_codeErr = $nameErr = $product_nameErr = $descriptionErr = $dosageErr = $quantityErr = $priceErr = $dateErr = '';
 
     $prescribeObj = new Prescribe ();
@@ -30,7 +30,9 @@
         $price = clean_input($_POST['price']);
         $duration = clean_input($_POST['duration']);
         $date = clean_input($_POST['date']);
-        $patient_id = clean_input($_POST['patient_id']);  
+        $patient_id = clean_input($_POST['patient_id']); 
+        $discount = clean_input($_POST['discount']);  
+ 
 
         //$types = clean_input($_POST['types']);
     
@@ -80,6 +82,8 @@
             $prescribeObj->price = $price;
             $prescribeObj->date = $date;
             $prescribeObj->duration = $duration;
+            $prescribeObj->discount = $discount;
+
             //$prescribeObj->types = $types;
 
     
@@ -263,9 +267,14 @@
         <label for="duration">Duration (Days)</label>
         <input type="number" name="duration" value="<?= $duration ?>" required>
 
+        <label for="discount">Discount (%)</label>
+        <input type="number" id="discount" name="discount" value=" <?= $discount ?>">
+
         <div class="form-actions">
             <input type="submit" value="Add">
         </div>
     </form>
+
+    
 </body>
 </html>

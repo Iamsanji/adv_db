@@ -11,7 +11,7 @@ require_once('header.php');
 require_once('functions.php');
 require_once('prescribe.class.php');
 
-$product_code = $name = $product_name = $description = $dosage = $duration = $quantity = $price = $date = '';
+$product_code = $name = $product_name = $description = $dosage = $duration = $discount = $quantity = $price = $date = '';
 $product_codeErr = $nameErr = $product_nameErr = $descriptionErr = $dosageErr = $quantityErr = $priceErr = $dateErr = '';
 
 $prescribeObj = new Prescribe();
@@ -19,7 +19,7 @@ $prescribeObj = new Prescribe();
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     if (isset($_GET['id'])) {
         $id = $_GET['id'];
-        $record = $prescribeObj->fetchRecord($id); // This should fetch the correct record
+        $record = $prescribeObj->fetchRecord($id);
 
         if (!empty($record)) {
             $product_code = $record['product_code'];
@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $quantity = $record['quantity'];
             $price = $record['price'];
             $duration = $record['duration'];
+            $discount = $record['discount'];
             $date = $record['date'];
         } else {
             echo 'No prescription found or you do not have permission to edit this prescription.';
@@ -40,17 +41,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = clean_input($_POST['id']);
-    $product_code = clean_input($_POST['product_code']);
-    $name = clean_input($_POST['name']);
-    $product_name = clean_input($_POST['product_name']);
-    $description = clean_input($_POST['description']);
-    $dosage = clean_input($_POST['dosage']);
-    $quantity = clean_input($_POST['quantity']);
-    $price = clean_input($_POST['price']);
-    $date = clean_input($_POST['date']);
-    $patient_id = clean_input($_POST['patient_id']);
-    $duration = clean_input($_POST['duration']);
+    $id = isset($_POST['id']) ? clean_input($_POST['id']) : '';  // Default value if 'id' is not set
+    $product_code = isset($_POST['product_code']) ? clean_input($_POST['product_code']) : '';
+    $name = isset($_POST['name']) ? clean_input($_POST['name']) : '';
+    $product_name = isset($_POST['product_name']) ? clean_input($_POST['product_name']) : '';
+    $description = isset($_POST['description']) ? clean_input($_POST['description']) : '';
+    $dosage = isset($_POST['dosage']) ? clean_input($_POST['dosage']) : '';
+    $quantity = isset($_POST['quantity']) ? clean_input($_POST['quantity']) : '';
+    $price = isset($_POST['price']) ? clean_input($_POST['price']) : '';
+    $discount = isset($_POST['discount']) ? clean_input($_POST['discount']) : '';
+    $date = isset($_POST['date']) ? clean_input($_POST['date']) : '';
+    $patient_id = isset($_POST['patient_id']) ? clean_input($_POST['patient_id']) : '';
+    $duration = isset($_POST['duration']) ? clean_input($_POST['duration']) : '';
+
 
     // Error checks
     if (empty($product_code)) { $product_codeErr = 'Product Code is required'; }
@@ -71,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $prescribeObj->dosage = $dosage;
         $prescribeObj->quantity = $quantity;
         $prescribeObj->price = $price;
+        $prescribeObj->discount = $discount;
         $prescribeObj->date = $date;
         $prescribeObj->duration = $duration;
         $prescribeObj->user_id = $patient_id;
@@ -233,6 +237,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         <label for="duration">Duration (Days)</label>
         <input type="number" name="duration" value="<?= $duration ?>" required>
+
+        <label for="discount">Discount (%)</label>
+        <input type="number" id="discount" name="discount" value=" <?= $discount ?>">
 
         <div class="form-actions">
             <input type="submit" value="Update">
